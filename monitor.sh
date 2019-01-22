@@ -39,6 +39,10 @@ command -v pidstat >/dev/null 2>&1 || yum install sysstat
 iostat sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm 1 -m > $dirName/disk.log &
 pids="$!"
 
+#disk-extra
+iostat sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm 1 -m -x > $dirName/disk-extra.log &
+pids="$!"
+
 #net
 sar -n DEV 1 > $dirName/net.log 	&
 pids="$pids $!"
