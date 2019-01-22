@@ -240,7 +240,7 @@ function docbsubmit(){
 
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
-	if [ X$curNum == X0 ];then
+	if [ X$curNum != X0 ];then
 	    echo "---cosbench has active work wait----"
 	fi
 	sleep 2
