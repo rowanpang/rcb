@@ -233,9 +233,29 @@ function doClean() {
 }
 
 function docbsubmit(){
+    cbdir="/root/cosbench/0.4.2.c4"
+    cbcli="$cbdir/cli.sh"
     issue=$1
     echo "--cosbench submit $issue---"
-    sleep 10
+
+    while [[ "true" ]]; do
+	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
+	if [ X$curNum == X0 ];then
+	    echo "---cosbench has active work wait----"
+	fi
+	sleep 2
+    done
+
+    $cbcli submit $issue
+    sleep 1
+
+    while [[ "true" ]]; do
+	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
+	if [ X$curNum == X0 ];then
+	    break
+	fi
+	sleep 1
+    done
 }
 
 function docbIssues() {
