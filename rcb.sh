@@ -299,8 +299,8 @@ function dorcb() {
     cbTdir="./cbTest"
 
     preMon
-    if [ X$optIssues != X ];then
-	issues=$optIssues
+    if [ "X$optIssues" != X ];then
+	issues="$optIssues"
     else
 	if [ X$testType == X ];then
 	    echo "testType NONE error,exit"
