@@ -248,7 +248,11 @@ function docbsubmit(){
 	fi
     done
 
-    $cbcli submit $issue
+    ret=`$cbcli submit $issue`
+    wkid=`echo $ret | awk '{print $2}'`
+    archiveDir=`ls -d $cbdir/archive/$wkid*`
+    echo "archiveDir --$archiveDir---"
+
     sleep 1
 
     while [[ "true" ]]; do
@@ -259,6 +263,9 @@ function docbsubmit(){
 	echo "--waiting finished --"
 	sleep 1
     done
+
+    echo "coping archive log--"
+    cp -r $archiveDir ./$resDir		#got cosbench archive log
 }
 
 function docbIssues() {
