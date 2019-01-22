@@ -241,9 +241,11 @@ function docbsubmit(){
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
 	if [ X$curNum != X0 ];then
+	    break
+	else
 	    echo "---cosbench has active work wait----"
+	    sleep 2
 	fi
-	sleep 2
     done
 
     $cbcli submit $issue
