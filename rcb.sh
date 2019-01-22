@@ -256,6 +256,7 @@ function docbsubmit(){
 	if [ X$curNum == X0 ];then
 	    break
 	fi
+	echo "--waiting finished --"
 	sleep 1
     done
 }
