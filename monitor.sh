@@ -41,7 +41,7 @@ pids="$!"
 
 #disk-extra
 iostat sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm 1 -m -x > $dirName/disk-extra.log &
-pids="$!"
+pids="$pids $!"
 
 #net
 sar -n DEV 1 > $dirName/net.log 	&
