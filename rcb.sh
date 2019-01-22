@@ -243,8 +243,8 @@ function docbIssues() {
 	echo -e "\033[0;1;31m--do cosbench for issue $issue--\033[0m"
 
 
-	# cbTest/10m-delete.xml
-	testType=${issue#*/}		#-->1m-delete.xml
+	# ./cbTest/10m-delete.xml
+	testType=${issue##*/}		#-->1m-delete.xml
 	testType=${testType%-*.xml}	#-->10m
 	echo "testType $testType"
 	if [ -z $dryRun ];then
@@ -256,8 +256,8 @@ function docbIssues() {
 	fi
 
 	#echo "do cosbench for issues $issue"
-	# cbTest/10m-delete.xml
-	idtSuffix=${issue#*/}		    #-->10m-delete.xml
+	# ./cbTest/10m-delete.xml
+	idtSuffix=${issue##*/}		    #-->10m-delete.xml
 	idtSuffix=${idtSuffix%.*}	    #-->10m-delete
 	#echo $idtSuffix
 	startMon $idtSuffix
