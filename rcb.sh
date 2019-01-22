@@ -8,7 +8,7 @@ nodesPwds="
     192.168.100.102,IPS@jjfab2018
 "
 
-#issue fileNames
+#ops name
 issues="
     write
     read
@@ -285,7 +285,7 @@ function dorcb() {
 	fi
 	issuesNew=""
 	for issue in $issues ;do
-	    issuesNew="$issuesNew cbTdir/$issue"
+	    issuesNew="$issuesNew $cbTdir/$testType-$issue.xml"
 	done
 	issues=$issuesNew
     fi
