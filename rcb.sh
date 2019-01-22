@@ -232,6 +232,12 @@ function doClean() {
     echo
 }
 
+function docbsubmit(){
+    issue=$1
+    echo "--cosbench submit $issue---"
+    sleep 10
+}
+
 function docbIssues() {
     issues="$@"
     for issue in $issues ;do
@@ -242,29 +248,23 @@ function docbIssues() {
 
 	echo -e "\033[0;1;31m--do cosbench for issue $issue--\033[0m"
 
-
+	#echo "do cosbench for issues $issue"
 	# ./cbTest/10m-delete.xml
-	testType=${issue##*/}		#-->1m-delete.xml
-	testType=${testType%-*.xml}	#-->10m
-	echo "testType $testType"
+	idtSuffix=${issue##*/}		    #-->10m-delete.xml
+	idtSuffix=${idtSuffix%.*}	    #-->10m-delete
+	#echo $idtSuffix
 	if [ -z $dryRun ];then
-	    resDir="$testType-res-`date +%Y%m%d-%H%M%S`"
+	    resDir="res-$idtSuffix-`date +%m%d-%M%S`"
 	    if [ -d $resDir ];then
 		rm -rf $resDir
 	    fi
 	    mkdir $resDir
 	fi
 
-	#echo "do cosbench for issues $issue"
-	# ./cbTest/10m-delete.xml
-	idtSuffix=${issue##*/}		    #-->10m-delete.xml
-	idtSuffix=${idtSuffix%.*}	    #-->10m-delete
-	#echo $idtSuffix
 	startMon $idtSuffix
 	if [ -z $dryRun ];then
 	    #----cosbench
-	    :
-
+	    docbsubmit	$issue
 	fi
 	stopMonGetRet
 	sleep 1
