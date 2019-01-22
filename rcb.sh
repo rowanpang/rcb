@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#node to monitor
 nodes=""
 nodesPwds="
     127.0.0.1,IPS@jjfab2018
@@ -249,21 +250,21 @@ function docbsubmit(){
     done
 
     ret=`$cbcli submit $issue 2>/dev/null`
-    wkid=`echo $ret | awk '{print $2}'`
-    archiveDir=`ls -d $cbdir/archive/$wkid*`
-    echo "archiveDir --$archiveDir---"
-
+    #echo "submit ret $ret"
+    wkid=`echo $ret | awk '{print $4}'`
     sleep 1
 
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
-	if [ X$curNum == X0 ];then
+	archiveDir=`ls -d $cbdir/archive/$wkid-* 2>/dev/null`
+	if [ X$curNum == X0 -a "X$archiveDir" != X ];then
 	    break
 	fi
 	echo "--waiting finished --"
 	sleep 1
     done
 
+    echo "archiveDir --$archiveDir---"
     echo "coping archive log--"
     cp -r $archiveDir ./$resDir		#got cosbench archive log
 }
