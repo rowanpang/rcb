@@ -248,7 +248,7 @@ function docbsubmit(){
 	fi
     done
 
-    ret=`$cbcli submit $issue`
+    ret=`$cbcli submit $issue 2>/dev/null`
     wkid=`echo $ret | awk '{print $2}'`
     archiveDir=`ls -d $cbdir/archive/$wkid*`
     echo "archiveDir --$archiveDir---"
