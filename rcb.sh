@@ -250,7 +250,7 @@ function docbsubmit(){
     done
 
     ret=`$cbcli submit $issue 2>/dev/null`
-    #echo "submit ret $ret"
+    echo "submit ret $ret"
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
 
@@ -260,7 +260,7 @@ function docbsubmit(){
 	if [ X$curNum == X0 -a "X$archiveDir" != X ];then
 	    break
 	fi
-	echo "--waiting finished --"
+	echo "--running,waiting finished --"
 	sleep 1
     done
 
