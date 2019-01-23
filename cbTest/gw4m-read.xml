@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<workload name="4m-read" description="sample benchmark for s3">
+<workload name="gw4m-read" description="sample benchmark for s3">
     <storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.100:7480;server_side_encryption=false;signurl_use_https=false;" />
 
     <workflow>
 	<workstage name="read">
-	    <work name="4mr-driver1" interval="1" workers="100" totalOps="10000" driver="driver1">
+	    <work name="gw4mr-driver1" interval="1" workers="100" totalOps="10000" driver="driver1">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.100:7480;server_side_encryption=false;signurl_use_https=false;" />
-		<operation type="read" ratio="100" config="cprefix=cb4m-;oprefix=driver1-;containers=r(1,20);objects=s(1,600000);sizes=c(4)MB;" />
+		<operation type="read" ratio="100" config="cprefix=cbgw4m-;oprefix=driver1-;containers=r(1,20);objects=s(1,600000);sizes=c(4)MB;" />
 	    </work>
 
-	    <work name="4mr-driver2" interval="1" workers="100" totalOps="10000" driver="driver2">
+	    <work name="gw4mr-driver2" interval="1" workers="100" totalOps="10000" driver="driver2">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.101:7480;server_side_encryption=false;signurl_use_https=false;" />
-		<operation type="read" ratio="100" config="cprefix=cb4m-;oprefix=driver2-;containers=r(1,20);objects=s(1,600000);sizes=c(4)MB;" />
+		<operation type="read" ratio="100" config="cprefix=cbgw4m-;oprefix=driver2-;containers=r(1,20);objects=s(1,600000);sizes=c(4)MB;" />
 	    </work>
 
-	    <work name="4mr-driver3" interval="1" workers="100" totalOps="10000" driver="driver3">
+	    <work name="gw4mr-driver3" interval="1" workers="100" totalOps="10000" driver="driver3">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.102:7480;server_side_encryption=false;signurl_use_https=false;" />
-		<operation type="read" ratio="100" config="cprefix=cb4m-;oprefix=driver3-;containers=r(1,20);objects=s(1,600000);sizes=c(4)MB;" />
+		<operation type="read" ratio="100" config="cprefix=cbgw4m-;oprefix=driver3-;containers=r(1,20);objects=s(1,600000);sizes=c(4)MB;" />
 	    </work>
 	</workstage>
     </workflow>
