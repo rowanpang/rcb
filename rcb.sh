@@ -260,7 +260,7 @@ function docbsubmit(){
 	if [ X$curNum == X0 -a "X$archiveDir" != X ];then
 	    break
 	fi
-	echo "--running,waiting finished --"
+	echo "--$wkid running,waiting finished --"
 	sleep 1
     done
 
