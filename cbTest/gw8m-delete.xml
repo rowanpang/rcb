@@ -4,17 +4,17 @@
 
     <workflow>
 	<workstage name="delete">
-	    <work name="gw8md-driver1" interval="1" workers="100" totalOps="5000000" driver="driver1">
+	    <work name="gw8md-driver1" interval="1" workers="100" totalOps="200000" driver="driver1">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.100:7480;server_side_encryption=false;signurl_use_https=false;" />
 		<operation type="delete" ratio="100" config="cprefix=cbgw8m-;oprefix=driver1-;containers=r(1,20);objects=s(1,600000);sizes=c(8)MB;" />
 	    </work>
 
-	    <work name="gw8md-driver2" interval="1" workers="100" totalOps="5000000" driver="driver2">
+	    <work name="gw8md-driver2" interval="1" workers="100" totalOps="200000" driver="driver2">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.101:7480;server_side_encryption=false;signurl_use_https=false;" />
 		<operation type="delete" ratio="100" config="cprefix=cbgw8m-;oprefix=driver2-;containers=r(1,20);objects=s(1,600000);sizes=c(8)MB;" />
 	    </work>
 
-	    <work name="gw8md-driver3" interval="1" workers="100" totalOps="5000000" driver="driver3">
+	    <work name="gw8md-driver3" interval="1" workers="100" totalOps="200000" driver="driver3">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.102:7480;server_side_encryption=false;signurl_use_https=false;" />
 		<operation type="delete" ratio="100" config="cprefix=cbgw8m-;oprefix=driver3-;containers=r(1,20);objects=s(1,600000);sizes=c(8)MB;" />
 	    </work>
