@@ -261,7 +261,7 @@ function docbsubmit(){
 	    break
 	fi
 	tNow=`date '+%s'`
-	tDur=let tNow - tStart
+	let "tDur=tNow-tStart"
 	echo "--$wkid $issue running,escape $tDur s--"
 	sleep 1
     done
@@ -287,7 +287,7 @@ function docbIssues() {
 	idtSuffix=${idtSuffix%.*}	    #-->10m-delete
 	#echo $idtSuffix
 	if [ -z $dryRun ];then
-	    resDir="res-$idtSuffix-`date +%m%d-%M%S`"
+	    resDir="res-$idtSuffix-`date +%m%d%H%M%S`"
 	    if [ -d $resDir ];then
 		rm -rf $resDir
 	    fi
