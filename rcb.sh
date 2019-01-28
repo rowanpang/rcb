@@ -121,7 +121,7 @@ function gotIdentify(){
 function preMon(){
     for node in $nodes;do
 	echo "do preMon for node:$node"
-	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d`
+	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d '/tmp/rMonTmp.XXXXXXXX'`
 	case $? in
 	    0)
 		;;
