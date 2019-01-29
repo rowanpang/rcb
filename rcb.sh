@@ -283,6 +283,7 @@ function docbsubmit(){
     echo -ne '\e[?25l'
     echo -n "--$wkid $issue running,escape "
     tdlo=0
+    echo -ne "\e[0;1;31m"
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
 	archiveDir=`ls -d $cbdir/archive/$wkid-* 2>/dev/null`
@@ -296,6 +297,7 @@ function docbsubmit(){
 	lineadj $tdln $tdlo
 	sleep 1
     done
+    echo -ne "\e[0m"
     echo -e '\e[?25h'
 
     echo "archiveDir --$archiveDir---"
