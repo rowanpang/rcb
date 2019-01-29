@@ -242,8 +242,8 @@ function lineadj(){
     if [ $ln -lt $lo ];then
         ((ld=lo-ln))
         while [ $ld -ge 1 ];do
-        ¦   bs="$bs\\b"
-        ¦   nsp="$nsp "
+	    bs="$bs\\b"
+	    nsp="$nsp "
 	    ((ld=ld-1))
         done
 
@@ -280,7 +280,7 @@ function docbsubmit(){
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
 
-    echo "--$wkid $issue running,escape "
+    echo -n "--$wkid $issue running,escape "
     tdlo=0
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
