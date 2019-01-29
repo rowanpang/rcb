@@ -4,17 +4,17 @@
 
     <workflow>
 	<workstage name="read">
-	    <work name="gw128kr-driver1" interval="1" workers="100" totalOps="200000" driver="driver1">
+	    <work name="gw128kr-driver1" interval="1" workers="100" totalOps="1000000" driver="driver1">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.100:7480;server_side_encryption=false;signurl_use_https=false;" />
 		<operation type="read" ratio="100" config="cprefix=cbgw128k-;oprefix=driver1-;containers=r(1,20);objects=s(1,6000000);sizes=c(128)KB;" />
 	    </work>
 
-	    <work name="gw128kr-driver2" interval="1" workers="100" totalOps="200000" driver="driver2">
+	    <work name="gw128kr-driver2" interval="1" workers="100" totalOps="1000000" driver="driver2">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.101:7480;server_side_encryption=false;signurl_use_https=false;" />
 		<operation type="read" ratio="100" config="cprefix=cbgw128k-;oprefix=driver2-;containers=r(1,20);objects=s(1,6000000);sizes=c(128)KB;" />
 	    </work>
 
-	    <work name="gw128kr-driver3" interval="1" workers="100" totalOps="200000" driver="driver3">
+	    <work name="gw128kr-driver3" interval="1" workers="100" totalOps="1000000" driver="driver3">
 		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.102:7480;server_side_encryption=false;signurl_use_https=false;" />
 		<operation type="read" ratio="100" config="cprefix=cbgw128k-;oprefix=driver3-;containers=r(1,20);objects=s(1,6000000);sizes=c(128)KB;" />
 	    </work>
