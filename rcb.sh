@@ -233,6 +233,32 @@ function doClean() {
     echo
 }
 
+function lineadj(){
+    ln=$1
+    lo=$2
+    bs=""
+    nsp=""
+
+    if [ $ln -lt $lo ];then
+        ((ld=lo-ln))
+        while [ $ld -ge 1 ];do
+        ¦   bs="$bs\\b"
+        ¦   nsp="$nsp "
+	    ((ld=ld-1))
+        done
+
+        echo -en "$bs"
+        echo -en "$nsp"
+    fi
+
+    bs=""
+    while [ $lo -ge 1 ];do
+        bs="$bs\\b"
+        ((lo=lo-1))
+    done
+    echo -en "$bs\b\b"
+}
+
 function docbsubmit(){
     cbdir="/root/cosbench/0.4.2.c4"
     cbcli="$cbdir/cli.sh"
@@ -254,6 +280,8 @@ function docbsubmit(){
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
 
+    echo "--$wkid $issue running,escape "
+    tdlo=0
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
 	archiveDir=`ls -d $cbdir/archive/$wkid-* 2>/dev/null`
@@ -262,9 +290,13 @@ function docbsubmit(){
 	fi
 	tNow=`date '+%s'`
 	let "tDur=tNow-tStart"
-	echo "--$wkid $issue running,escape $tDur s--"
+	tdln=${#tDur}
+	echo -n "$tDur s"
 	sleep 1
+	lineadj $tdln $tdlo
+	tdlo=${tdln}
     done
+    echo
 
     echo "archiveDir --$archiveDir---"
     echo "coping archive log--"
