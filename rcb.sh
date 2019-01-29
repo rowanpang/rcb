@@ -235,17 +235,28 @@ function doClean() {
 
 function lineadj(){
     ln=$1
+    lo=$2
     bs=""
     nsp=""
 
-    while [ $ln -ge 1 ];do
-        bs="$bs\\b"
-	nsp="$nsp "
-        ((ln=ln-1))
+    lb=$ln
+    if [ $ln -lt $lo ];then
+	((ld=lo-ln))
+	while [ $ld -ge 1 ];do
+	    nsp="$nsp "
+	    ((ld=ld-1))
+	done
+	echo -en "$nsp"
+
+	lb=$lo
+    fi
+
+    while [ $lb -ge 1 ];do
+	bs="$bs\\b"
+	((lb=lb-1))
     done
     echo -en "$bs\b\b"
-    echo -en "$nsp  "
-    echo -en "$bs\b\b"
+
 }
 
 function docbsubmit(){
@@ -269,6 +280,7 @@ function docbsubmit(){
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
 
+    echo -ne '\e[?25l'
     echo -n "--$wkid $issue running,escape "
     tdlo=0
     while [[ "true" ]]; do
@@ -281,10 +293,10 @@ function docbsubmit(){
 	let "tDur=tNow-tStart"
 	tdln=${#tDur}
 	echo -n "$tDur s"
+	lineadj $tdln $tdlo
 	sleep 1
-	lineadj $tdln
     done
-    echo
+    echo -e '\e[?25h'
 
     echo "archiveDir --$archiveDir---"
     echo "coping archive log--"
