@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<workload name="1m-write" description="sample benchmark for s3">
+    <storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.110:8060;server_side_encryption=false;signurl_use_https=false;" />
+
+    <workflow>
+	<workstage name="init">
+	    <work type="init" workers="1" config="cprefix=cb1m-;containers=r(1,20);" />
+	</workstage>
+
+	<workstage name="write">
+	    <work name="1mw-driver1" interval="1" workers="100" totalOps="200000" driver="driver1">
+		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.110:8060;server_side_encryption=false;signurl_use_https=false;" />
+		<operation type="write" ratio="100" config="cprefix=cb1m-;oprefix=driver1-;containers=r(1,20);objects=s(1,600000);sizes=c(1)MB;" />
+	    </work>
+
+	    <work name="1mw-driver2" interval="1" workers="100" totalOps="200000" driver="driver2">
+		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.111:8060;server_side_encryption=false;signurl_use_https=false;" />
+		<operation type="write" ratio="100" config="cprefix=cb1m-;oprefix=driver2-;containers=r(1,20);objects=s(1,600000);sizes=c(1)MB;" />
+	    </work>
+
+	    <work name="1mw-driver3" interval="1" workers="100" totalOps="200000" driver="driver3">
+		<storage type="s3" config="path_style_access=true;accesskey=LPLKIEK557W7Z1JPJR4S;secretkey=q5gbRTQAuhKGnWurSudeODAvZ2zGnkfWeKCmx0CH;endpoint=http://192.168.100.112:8060;server_side_encryption=false;signurl_use_https=false;" />
+		<operation type="write" ratio="100" config="cprefix=cb1m-;oprefix=driver3-;containers=r(1,20);objects=s(1,600000);sizes=c(1)MB;" />
+	    </work>
+	</workstage>
+
+    </workflow>
+</workload>
