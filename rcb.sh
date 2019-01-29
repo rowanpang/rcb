@@ -235,27 +235,16 @@ function doClean() {
 
 function lineadj(){
     ln=$1
-    lo=$2
     bs=""
     nsp=""
 
-    if [ $ln -lt $lo ];then
-        ((ld=lo-ln))
-        while [ $ld -ge 1 ];do
-	    bs="$bs\\b"
-	    nsp="$nsp "
-	    ((ld=ld-1))
-        done
-
-        echo -en "$bs"
-        echo -en "$nsp"
-    fi
-
-    bs=""
-    while [ $lo -ge 1 ];do
+    while [ $ln -ge 1 ];do
         bs="$bs\\b"
-        ((lo=lo-1))
+	nsp="$nsp "
+        ((ln=ln-1))
     done
+    echo -en "$bs\b\b"
+    echo -en "$nsp  "
     echo -en "$bs\b\b"
 }
 
@@ -293,8 +282,7 @@ function docbsubmit(){
 	tdln=${#tDur}
 	echo -n "$tDur s"
 	sleep 1
-	lineadj $tdln $tdlo
-	tdlo=${tdln}
+	lineadj $tdln
     done
     echo
 
