@@ -309,8 +309,9 @@ function docbIssues() {
     issues="$@"
     for issue in $issues ;do
 	if ! [ -s $issue ];then
-	    echo "issue file $issue not exist break"
-	    break
+	    echo "test $issue file not exist skip "
+	    sleep 3
+	    continue
 	fi
 
 	echo -e "\033[0;1;31m--do cosbench for issue $issue--\033[0m"
