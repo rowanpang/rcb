@@ -256,7 +256,6 @@ function lineadj(){
 	((lb=lb-1))
     done
     echo -en "$bs\b\b"
-
 }
 
 function docbsubmit(){
@@ -295,6 +294,7 @@ function docbsubmit(){
 	tdln=${#tDur}
 	echo -n "$tDur s"
 	lineadj $tdln $tdlo
+	tdlo=$tdln
 	sleep 1
     done
     echo -ne "\e[0m"
