@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<workload name="demo-w" description="sample benchmark for s3">
+    <auth type="mock" />
+    <storage type="mock" config="size=4000" />
+
+    <workflow>
+	<workstage name="init_create_bucket">
+	    <work name="init1" type="init" workers="1" config="cprefix=demoW-cos1;containers=r(1,3)" driver="driver1">
+	    </work>
+	    <work name="init2" type="init" workers="1" config="cprefix=demoW-cos2;containers=r(1,3)" driver="driver2">
+	    </work>
+	    <work name="init3" type="init" workers="1" config="cprefix=demoW-cos3;containers=r(1,3)" driver="driver3">
+	    </work>
+	</workstage>
+
+	<workstage name="prepare">
+	    <work type="prepare" workers="100" config="cprefix=demoW-cos1;containers=r(1,3);objects=r(1,1200);sizes=c(4)KB" driver="driver1" >
+	    </work>
+	    <work type="prepare" workers="100" config="cprefix=demoW-cos2;containers=r(1,3);objects=r(1,1200);sizes=c(4)KB" driver="driver2">
+	    </work>
+	    <work type="prepare" workers="100" config="cprefix=demoW-cos3;containers=r(1,3);objects=r(1,1200);sizes=c(4)KB" driver="driver3">
+	    </work>
+	</workstage>
+
+<!-- write -->
+	<workstage name="demo-w*50">
+	    <work name="main" workers="50" runtime="120" driver="driver1">
+		<operation type="write" ratio="100" config="cprefix=demoW-cos1;containers=u(1,3);objects=u(1,1200);sizes=c(64)KB" />
+	    </work>
+	    <work name="main" workers="50" runtime="120" driver="driver2">
+		<operation type="write" ratio="100" config="cprefix=demoW-cos2;containers=u(1,3);objects=u(1,1200);sizes=c(64)KB" />
+	    </work>
+	    <work name="main" workers="50" runtime="120" driver="driver3">
+		<operation type="write" ratio="100" config="cprefix=demoW-cos3;containers=u(1,3);objects=u(1,1200);sizes=c(64)KB" />
+	    </work>
+	</workstage>
+
+	<workstage name="demo-w*200">
+	    <work name="main" workers="200" runtime="120" driver="driver1">
+		<operation type="write" ratio="100" config="cprefix=demoW-cos1;containers=u(1,3);objects=u(1,1200);sizes=c(64)KB" />
+	    </work>
+	    <work name="main" workers="200" runtime="120" driver="driver2">
+		<operation type="write" ratio="100" config="cprefix=demoW-cos2;containers=u(1,3);objects=u(1,1200);sizes=c(64)KB" />
+	    </work>
+	    <work name="main" workers="200" runtime="120" driver="driver3">
+		<operation type="write" ratio="100" config="cprefix=demoW-cos3;containers=u(1,3);objects=u(1,1200);sizes=c(64)KB" />
+	    </work>
+	</workstage>
+
+<!-- delete -->
+	<workstage name="cleanup">
+	    <work type="cleanup" workers="50" config="cprefix=demoW-cos1;containers=r(1,3);objects=r(1,1200)" driver="driver1">
+	    </work>
+	    <work type="cleanup" workers="50" config="cprefix=demoW-cos2;containers=r(1,3);objects=r(1,1200)" driver="driver2">
+	    </work>
+	    <work type="cleanup" workers="50" config="cprefix=demoW-cos3;containers=r(1,3);objects=r(1,1200)" driver="driver3">
+	    </work>
+	</workstage>
+
+	<workstage name="dispose">
+	    <work type="dispose" workers="50" config="cprefix=demoW-cos1;containers=r(1,3)" driver="driver1">
+	    </work>
+	    <work type="dispose" workers="50" config="cprefix=demoW-cos2;containers=r(1,3)" driver="driver2">
+	    </work>
+	    <work type="dispose" workers="50" config="cprefix=demoW-cos3;containers=r(1,3)" driver="driver3">
+	    </work>
+	</workstage>
+    </workflow>
+</workload>
