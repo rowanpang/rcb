@@ -301,8 +301,7 @@ function docbsubmit(){
     echo -e '\e[?25h'
 
     echo "archiveDir --$archiveDir---"
-    echo "coping archive log--"
-    cp -r $archiveDir ./$resDir		#got cosbench archive log
+    sleep 1;cp -r $archiveDir ./$resDir	    #wait log file and got it
 }
 
 function docbIssues() {
