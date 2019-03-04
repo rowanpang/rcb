@@ -23,6 +23,8 @@ nodeinfoFile='./nodeinfo.log'
 SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
 
+cbdir="/root/cosbench/0.4.2.c4"
+
 function doInit() {
     command -v sshpass >/dev/null 2>&1 || yum install sshpass	    #need epel
     command -v fio >/dev/null 2>&1 || yum install fio
@@ -34,6 +36,11 @@ function doInit() {
 
     node=$n
     #echo "--------$SSHPSCP"
+
+    if ! [ -d $cbdir ];then
+	echo "$cbdir not exist,exit 1"
+	exit 1
+    fi
 }
 
 function gotNodePwd(){
@@ -259,7 +266,6 @@ function lineadj(){
 }
 
 function docbsubmit(){
-    cbdir="/root/cosbench/0.4.2.c4"
     cbcli="$cbdir/cli.sh"
     issue=$1
     echo "--cosbench submit $issue---"
@@ -278,7 +284,14 @@ function docbsubmit(){
     echo "submit ret $ret"
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
+    resDir="res-$idtSuffix-$wkid"
+    if [ -d $resDir ];then
+	echo "$resDir duplicate, mv to date +%s format"
+	mv $resDir $resDir-`date +%s`
+    fi
+    mkdir $resDir
 
+    #---->block start ===> not modify this block
     echo -ne '\e[?25l'
     echo -n "--$wkid $issue running,escape "
     tdlo=0
@@ -299,6 +312,7 @@ function docbsubmit(){
     done
     echo -ne "\e[0m"
     echo -e '\e[?25h'
+    #---->block end ===> not modify this block
 
     echo "archiveDir --$archiveDir---"
     sleep 1;cp -r $archiveDir ./$resDir	    #wait log file and got it
@@ -320,13 +334,6 @@ function docbIssues() {
 	idtSuffix=${issue##*/}		    #-->10m-delete.xml
 	idtSuffix=${idtSuffix%.*}	    #-->10m-delete
 	#echo $idtSuffix
-	if [ -z $dryRun ];then
-	    resDir="res-$idtSuffix-`date +%m%d%H%M%S`"
-	    if [ -d $resDir ];then
-		rm -rf $resDir
-	    fi
-	    mkdir $resDir
-	fi
 
 	startMon $idtSuffix
 	if [ -z $dryRun ];then
