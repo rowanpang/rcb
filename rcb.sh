@@ -1,12 +1,14 @@
 #!/bin/bash
 
-#node to monitor
-nodes=""
-nodesPwds="
-    127.0.0.1,IPS@jjfab2018
+:<<EOF
+    node to monitor
     192.168.100.100,IPS@jjfab2018
     192.168.100.101,IPS@jjfab2018
     192.168.100.102,IPS@jjfab2018
+EOF
+nodes=""
+nodesPwds="
+    127.0.0.1,IPS@jjfab2018
 "
 
 #ops name
@@ -316,7 +318,7 @@ function csvParser(){
 	else
 	    if [ X$lstage != X ];then
 		resAvg=`echo "scale=2;$resSum/$i"| bc`
-		echo -e "stage-iops-res: $lstage\t $iopsSum\t $resAvg"
+		echo -e "\tstage-iops-res: $lstage\t $iopsSum\t $resAvg"
 		[ $verbose -ge 1 ] && echo "  new Stage: $stage "
 		if [ X$postCont != X ];then
 		    i=0
@@ -372,11 +374,7 @@ function csvParser(){
     [root@as13kp9 0.4.2.c4]#
 EOF
 
-function docbsubmit(){
-    cbcli="$cbdir/cli.sh"
-    issue=$1
-    [ $verbose -ge 1 ] && echo "--cosbench submit $issue---"
-
+function wkChk() {
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
 	if [ X$curNum == X0 ];then
@@ -386,11 +384,25 @@ function docbsubmit(){
 	    sleep 2
 	fi
     done
+}
+
+function docbCancel(){
+    wkid=$1
+    cbcli="$cbdir/cli.sh"
+    $cbcli cancel $wkid
+}
+
+function docbsubmit(){
+    cbcli="$cbdir/cli.sh"
+    issue=$1
+    [ $verbose -ge 1 ] && echo "--cosbench submit $issue---"
     tStart=`date '+%s'`
+
     ret=`$cbcli submit $issue 2>/dev/null`
     [ $verbose -ge 1 ] && echo "submit ret $ret"
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
+
     resDir="res-$idtSuffix-$wkid"
     if [ -d $resDir ];then
 	echo "$resDir duplicate, mv to date +%s format"
@@ -450,9 +462,9 @@ function docbIssues() {
 	idtSuffix=${idtSuffix%.*}	    #-->10m-delete
 	#echo $idtSuffix
 
+	wkChk
 	startMon $idtSuffix
 	if [ -z $dryRun ];then
-	    #----cosbench
 	    docbsubmit	$issue
 	fi
 	stopMonGetRet
@@ -547,11 +559,15 @@ function optParser() {
 function onCtrlC(){
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
+    if [ X$wkid != X ];then
+	docbCancel
+    fi
 
+    doClean
 }
 
 function main(){
-    #trap 'onCtrlC' INT
+    trap 'onCtrlC' INT
     optParser $@
     doInit
     if [ -n "$cleanRun" ];then
