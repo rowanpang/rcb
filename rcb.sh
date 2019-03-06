@@ -495,12 +495,15 @@ function usage () {
 	-h	    Display this message
 	-d	    dryRun
 	-c	    doClean
-	-t	    testType
+	-t type	    testType	    [$testType]
+	-f	    free mem ,dropCache	    [$freeMem]
+	-v num	    verbose level   [$verbose]
+	-p path	    cosbench path   [$cbdir]
     "
 }
 
 function main(){
-    while getopts "hdct:v:" opt;do
+    while getopts "hdct:v:p:" opt;do
 	case $opt in
 	    h)
 		usage
@@ -520,6 +523,9 @@ function main(){
 		;;
 	    v)
 		verbose="$OPTARG"
+		;;
+	    p)
+		cbdir="$OPTARG"
 		;;
 
 	esac
