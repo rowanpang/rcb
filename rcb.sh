@@ -265,10 +265,114 @@ function lineadj(){
     echo -en "$bs\b\b"
 }
 
+function csvParser(){
+    csvFile="$HOME/w570-s3-1m/w570-s3-1m.csv"
+    csvFile="$HOME/w171-4m-read/w171-4m-read.csv"
+    csvFile=$1
+
+    hitHeader=""
+    lstage=""
+    i="0"
+
+    if ! [ -s $csvFile ];then
+	echo "$csvFile not exist,return"
+	return
+    fi
+
+    while read line ;do
+	if ! [ $hitHeader ];then
+	    hitHeader=`echo $line | grep -c '^Stage,Op-Name,'`
+	    [ $verbose -ge 1 ] && echo "hit header: $hitHeader"
+	    continue
+	fi
+
+	stage=`echo $line | awk 'BEGIN {FS=","} { print $1}'`
+	opName=`echo $line | awk 'BEGIN {FS=","} { print $2}'`
+	opType=`echo $line | awk 'BEGIN {FS=","} { print $3}'`
+	res=`echo $line | awk 'BEGIN {FS=","} { print $6}'`
+	iops=`echo $line | awk 'BEGIN {FS=","} { print $14}'`
+	stage="$stage($opName)"
+
+
+	[ $verbose -ge 1 ] && echo "$stage $res $iops $opType --"
+
+	if ! [ X$opType == Xread -o X$opType == Xwrite ] ;then
+	    [ $verbose -ge 3 ] && echo -n "not read/write, skip? "
+	    if [ $i -eq 0 ];then
+		[ $verbose -ge 3 ] && echo 'yes'
+		continue
+	    fi
+	    postCont="True"
+	    [ $verbose -ge 3 ] && echo 'no,need do resAvg .eg'
+	fi
+
+	if [ X$stage == X$lstage ];then
+	    ((i++));
+	    iopsSum=`echo "scale=2;$iopsSum+$iops" | bc`
+	    resSum=`echo "scale=2;$resSum+$res" | bc`
+	else
+	    if [ X$lstage != X ];then
+		resAvg=`echo "scale=2;$resSum/$i"| bc`
+		echo -e "stage-iops-res: $lstage\t $iopsSum\t $resAvg"
+		[ $verbose -gt 1 ] && echo "  new Stage: $stage "
+		if [ X$postCont != X ];then
+		    i=0
+		    postCont=""
+		    continue
+		fi
+	    else
+		[ $verbose -ge 1 ] && echo "first Stage: $stage "
+	    fi
+	    i=1
+	    iopsSum=$iops
+	    resSum=$res
+	    lstage=$stage
+	fi
+	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum resSum:$resSum"
+    done < $csvFile
+
+    if [ $i -ge 1 ];then
+	resAvg=`echo "scale=2;$resSum/$i"| bc`
+	echo -e "stage-iops-res: $lstage\t $iopsSum\t $resAvg"
+    fi
+}
+
+:<<EOF
+    ./cli cmd output msg
+    [root@as13kp9 0.4.2.c4]# ./cli.sh submit conf/workload-config.xml
+	Accepted with ID: w428
+    [root@as13kp9 0.4.2.c4]# ./cli.sh info
+	Drivers:
+	driver1	http://127.0.0.1:18088/driver
+	driver2	http://127.0.0.1:18188/driver
+	driver3	http://127.0.0.1:18288/driver
+	Total: 3 drivers
+
+	Active Workloads:
+	w428	Wed Mar 06 14:14:21 CST 2019	PROCESSING	s1-init
+	Total: 1 active workloads
+
+    [root@as13kp9 0.4.2.c4]# ./cli.sh submit conf/workload-config.xml
+	Accepted with ID: w429
+    [root@as13kp9 0.4.2.c4]# ./cli.sh info
+	Drivers:
+	driver1	http://127.0.0.1:18088/driver
+	driver2	http://127.0.0.1:18188/driver
+	driver3	http://127.0.0.1:18288/driver
+	Total: 3 drivers
+
+	Active Workloads:
+	w428	Wed Mar 06 14:14:21 CST 2019	PROCESSING	s2-prepare
+	w429	Wed Mar 06 14:14:26 CST 2019	QUEUING	None
+	Total: 2 active workloads
+
+    [root@as13kp9 0.4.2.c4]#
+EOF
+
 function docbsubmit(){
     cbcli="$cbdir/cli.sh"
     issue=$1
-    echo "--cosbench submit $issue---"
+    [ $verbose -gt 1 ] && echo "--cosbench submit $issue---"
 
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
@@ -281,7 +385,7 @@ function docbsubmit(){
     done
     tStart=`date '+%s'`
     ret=`$cbcli submit $issue 2>/dev/null`
-    echo "submit ret $ret"
+    [ $verbose -gt 1 ] && echo "submit ret $ret"
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
     resDir="res-$idtSuffix-$wkid"
@@ -314,8 +418,16 @@ function docbsubmit(){
     echo -e '\e[?25h'
     #---->block end ===> not modify this block
 
-    echo "archiveDir --$archiveDir---"
+    [ $verbose -gt 1 ] && echo "archiveDir --$archiveDir---"
     sleep 1;cp -r $archiveDir ./$resDir	    #wait log file and got it
+
+    bName=`basename $archiveDir`
+    csv="./$resDir/$bName/$bName.csv"
+    [ $verbose -gt 1 ] && echo "csv file: $csv"
+
+    if [ -z $dryRun ];then
+       csvParser $csv
+    fi
 }
 
 function docbIssues() {
@@ -364,7 +476,7 @@ function dorcb() {
 	issues=$issuesNew
     fi
 
-    echo "finally issues:
+    [ $verbose -gt 1 ] && echo "finally issues:
 	$issues
     "
     docbIssues "$issues"
@@ -375,6 +487,7 @@ cleanRun=""
 optIssues=""
 testType=""
 freeMem=""
+verbose="0"
 
 function usage () {
     echo "Usage :  $0 [options] [optIssues]
@@ -387,25 +500,29 @@ function usage () {
 }
 
 function main(){
-    while getopts "hdct:" opt;do
-    case $opt in
-        h)
-	    usage
-	    exit 0
-	    ;;
-	d)
-	    dryRun="True"
-	    ;;
-	c)
-	    cleanRun="True"
-	    ;;
-	t)
-	    testType="$OPTARG"
-	    ;;
-	f)
-	    freeMem="True"
-	    ;;
-    esac
+    while getopts "hdct:v:" opt;do
+	case $opt in
+	    h)
+		usage
+		exit 0
+		;;
+	    d)
+		dryRun="True"
+		;;
+	    c)
+		cleanRun="True"
+		;;
+	    t)
+		testType="$OPTARG"
+		;;
+	    f)
+		freeMem="True"
+		;;
+	    v)
+		verbose="$OPTARG"
+		;;
+
+	esac
     done
     shift $(($OPTIND-1))
     optIssues=$@
