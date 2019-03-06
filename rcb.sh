@@ -67,7 +67,7 @@ function gotNodePwd(){
 function saveNodeinfo() {
     node=$1
     info=$2
-    echo "do saveNodeinfo for node:$node,info:$info"
+    [ $verbose -ge 1 ] && echo "do saveNodeinfo for node:$node,info:$info"
     for nodeinfo in $nodeinfos;do
 	if [ $node == `echo $nodeinfo | awk 'BEGIN {FS=","} {print $1}'` ];then
 	    #echo "match node:$node"
@@ -127,7 +127,7 @@ function gotIdentify(){
 
 function preMon(){
     for node in $nodes;do
-	echo "do preMon for node:$node"
+	[ $verbose -ge 1 ] && echo "do preMon for node:$node"
 	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d '/tmp/rMonTmp.XXXXXXXX'`
 	case $? in
 	    0)
@@ -148,7 +148,7 @@ function preMon(){
 	#nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
 	if [ -z $dryRun ];then
 	    sshpass -p $(gotNodePwd $node) scp $monScript root@$node:$workDir
-	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir&&chmod +x ./$monScript"
+	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && chmod +x ./$monScript"
 	    if [ $node != '127.0.0.1' -a X$freeMem != X ];then
 		sshpass -p $(gotNodePwd $node) ssh $node "echo 1 > /proc/sys/vm/drop_caches"
 	    fi
@@ -157,63 +157,64 @@ function preMon(){
 	saveNodeinfo $node "$info"
     done
 
-    echo
+    [ $verbose -ge 1 ] && echo
 }
 
 function startMon(){
     idtSuffix=$1
     [ -n $idtSuffix ] || idtSuffix="myRead"
     for node in $nodes;do
-	echo "do startMon for node:$node"
+	[ $verbose -ge 1 ] && echo "do startMon for node:$node"
 	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
 	identify="$nName-$idtSuffix"
 	workDir=`gotWorkDir $node`
 	if [ -z $dryRun ];then
-	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && ./$monScript -ui $identify"
+	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && ./$monScript -d $identify -v $monVer"
 	fi
 	saveNodeinfo $node $identify
     done
-    echo
+    [ $verbose -ge 1 ] && echo
 }
 
 function stopMonGetRet(){
     for node in $nodes;do
-	echo "do stopMonGetRet for node:$node"
+	[ $verbose -ge 1 ] && echo "do stopMonGetRet for node:$node"
 	workDir=`gotWorkDir $node`
 	identify=`gotIdentify $node`
 	#echo "wkdir:$workDir"
 	#echo "idt:$identify"
 
 	if [ -z "$workDir" ];then
-	    echo '---warning--- workDir'
-	    exit
+	    echo 'monitor workDir not exist return'
+	    return
 	fi
 
 	if [ -z $dryRun ];then
-	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && ./$monScript"
+	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && ./$monScript -v $monVer"
 	    sshpass -p $(gotNodePwd $node) scp -r root@$node:$workDir/$identify ./$resDir
 	fi
-	echo
+	[ $verbose -ge 1 ] && echo
     done
-    echo
+    [ $verbose -ge 1 ] && echo
 }
 
 function postMon() {
     for node in $nodes;do
-	echo "do postMon for node:$node"
+	[ $verbose -ge 1 ] && echo "do postMon for node:$node"
 	workDir=`gotWorkDir $node`
 	#echo $workDir
 
 	if [ -z "$workDir" ];then
-	    echo '---warning--- workDir'
-	    exit
+	    echo 'monitor workDir not exist return'
+	    return
 	fi
 
 	if [ -z $dryRun ];then
 	    sshpass -p $(gotNodePwd $node) ssh $node "rm -rf $workDir"
 	fi
+	[ $verbose -ge 1 ] && echo
     done
-    echo
+    [ $verbose -ge 1 ] && echo
 }
 
 function doClean() {
@@ -225,8 +226,8 @@ function doClean() {
 	echo "idt:$identify"
 
 	if [ -z "$workDir" ];then
-	    echo '---warning--- workDir'
-	    exit
+	    echo 'monitor workDir not exist continue'
+	    continue
 	fi
 
 	if [ -z $dryRun ];then
@@ -523,6 +524,7 @@ function main(){
 		;;
 	    v)
 		verbose="$OPTARG"
+		monVer=$verbose
 		;;
 	    p)
 		cbdir="$OPTARG"
