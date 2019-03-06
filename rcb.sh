@@ -317,7 +317,7 @@ function csvParser(){
 	    if [ X$lstage != X ];then
 		resAvg=`echo "scale=2;$resSum/$i"| bc`
 		echo -e "stage-iops-res: $lstage\t $iopsSum\t $resAvg"
-		[ $verbose -gt 1 ] && echo "  new Stage: $stage "
+		[ $verbose -ge 1 ] && echo "  new Stage: $stage "
 		if [ X$postCont != X ];then
 		    i=0
 		    postCont=""
@@ -375,7 +375,7 @@ EOF
 function docbsubmit(){
     cbcli="$cbdir/cli.sh"
     issue=$1
-    [ $verbose -gt 1 ] && echo "--cosbench submit $issue---"
+    [ $verbose -ge 1 ] && echo "--cosbench submit $issue---"
 
     while [[ "true" ]]; do
 	curNum=$( $cbcli info 2>/dev/null | grep active | awk '{print $2}')
@@ -388,7 +388,7 @@ function docbsubmit(){
     done
     tStart=`date '+%s'`
     ret=`$cbcli submit $issue 2>/dev/null`
-    [ $verbose -gt 1 ] && echo "submit ret $ret"
+    [ $verbose -ge 1 ] && echo "submit ret $ret"
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
     resDir="res-$idtSuffix-$wkid"
@@ -421,12 +421,12 @@ function docbsubmit(){
     echo -e '\e[?25h'
     #---->block end ===> not modify this block
 
-    [ $verbose -gt 1 ] && echo "archiveDir --$archiveDir---"
+    [ $verbose -ge 1 ] && echo "archiveDir --$archiveDir---"
     sleep 1;cp -r $archiveDir ./$resDir	    #wait log file and got it
 
     bName=`basename $archiveDir`
     csv="./$resDir/$bName/$bName.csv"
-    [ $verbose -gt 1 ] && echo "csv file: $csv"
+    [ $verbose -ge 1 ] && echo "csv file: $csv"
 
     if [ -z $dryRun ];then
        csvParser $csv
@@ -479,7 +479,7 @@ function dorcb() {
 	issues=$issuesNew
     fi
 
-    [ $verbose -gt 1 ] && echo "finally issues:
+    echo "finally issues:
 	$issues
     "
     docbIssues "$issues"
@@ -544,7 +544,14 @@ function optParser() {
     optIssues=$@
 }
 
+function onCtrlC(){
+    [ $verbose -ge 1 ] && echo "Ctrl+c captured"
+
+
+}
+
 function main(){
+    #trap 'onCtrlC' INT
     optParser $@
     doInit
     if [ -n "$cleanRun" ];then
