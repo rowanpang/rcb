@@ -501,14 +501,14 @@ function usage () {
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
     "
+    exit 0
 }
 
 function main(){
-    while getopts "hdct:v:p:" opt;do
+    while getopts ":hdct:v:p:" opt;do
 	case $opt in
 	    h)
 		usage
-		exit 0
 		;;
 	    d)
 		dryRun="True"
@@ -529,7 +529,14 @@ function main(){
 	    p)
 		cbdir="$OPTARG"
 		;;
-
+	    \?)
+		echo "--Invalid args -$OPTARG"
+		usage
+		;;
+	    :)
+		echo "--Need arguement -$OPTARG"
+		usage
+		;;
 	esac
     done
     shift $(($OPTIND-1))

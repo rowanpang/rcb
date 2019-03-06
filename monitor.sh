@@ -7,20 +7,28 @@ function usage () {
         -d  dirname	    log dirName
 	-v  verbose level   loglevel [$verbose]
     "
+    exit 0
 }
 
 function optParser(){
-    while getopts "hd:v:" opt;do
+    while getopts ":hd:v:" opt;do
         case $opt in
             h)
                 usage
-                exit 0
                 ;;
             d)
         	dirName="$OPTARG"
                 ;;
 	    v)
 		verbose="$OPTARG"
+		;;
+	    \?)
+		echo "--Invalid args -$OPTARG"
+		usage
+		;;
+	    :)
+		echo "--Need arguement -$OPTARG"
+		usage
 		;;
 	esac
     done
