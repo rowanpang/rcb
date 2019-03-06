@@ -18,14 +18,8 @@ issues="
     delete
 "
 
-monScript="./monitor.sh"
-nodeinfos=""
-nodeinfoFile='./nodeinfo.log'
-
 SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
-
-cbdir="/root/cosbench/0.4.2.c4"
 
 function doInit() {
     monVer=$verbose
@@ -72,6 +66,11 @@ function gotNodePwd(){
 function saveNodeinfo() {
     node=$1
     info=$2
+    if [ -s $nodeinfoFile ];then
+	nodeinfoFile="$nodeinfoFile.`date +%s`"
+	echo -n "file $nodeinfoFile exist,use $nodeinfoFile"
+    fi
+
     [ $verbose -ge 1 ] && echo "do saveNodeinfo for node:$node,info:$info"
     for nodeinfo in $nodeinfos;do
 	if [ $node == `echo $nodeinfo | awk 'BEGIN {FS=","} {print $1}'` ];then
@@ -95,7 +94,8 @@ function saveNodeinfo() {
 function gotNodeinfos() {
     if [ -z "$nodeinfos" ];then
 	if ! [ -s "$nodeinfoFile" ];then
-	    exit
+	    echo "$nodeinfoFile not exist,exit 1"
+	    exit 1
 	fi
 	nodeinfos=`cat $nodeinfoFile`
 	#rm -f $nodeinfoFile
@@ -503,6 +503,11 @@ testType=""
 freeMem=""
 verbose="0"
 
+monScript="./monitor.sh"
+nodeinfos=""
+nodeinfoFile='./nodeinfo.log'
+cbdir="/root/cosbench/0.4.2.c4"
+
 function usage () {
     echo "Usage :  $0 [options] [optIssues]
 	Options:
@@ -513,12 +518,13 @@ function usage () {
 	-f	    free mem ,dropCache	    [$freeMem]
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
+	-n nodeinfoFile	    nodeinfo file name [$nodeinfoFile]
     "
     exit 0
 }
 
 function optParser() {
-    while getopts ":hdct:v:p:" opt;do
+    while getopts ":hdct:v:p:n:" opt;do
 	case $opt in
 	    h)
 		usage
@@ -540,6 +546,9 @@ function optParser() {
 		;;
 	    p)
 		cbdir="$OPTARG"
+		;;
+	    n)
+		nodeinfoFile="$OPTARG"
 		;;
 	    \?)
 		echo "--Invalid args -$OPTARG"
