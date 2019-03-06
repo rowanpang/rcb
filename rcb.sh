@@ -26,6 +26,8 @@ SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
 cbdir="/root/cosbench/0.4.2.c4"
 
 function doInit() {
+    monVer=$verbose
+
     command -v sshpass >/dev/null 2>&1 || yum install sshpass	    #need epel
     command -v fio >/dev/null 2>&1 || yum install fio
 
@@ -504,7 +506,7 @@ function usage () {
     exit 0
 }
 
-function main(){
+function optParser() {
     while getopts ":hdct:v:p:" opt;do
 	case $opt in
 	    h)
@@ -524,7 +526,6 @@ function main(){
 		;;
 	    v)
 		verbose="$OPTARG"
-		monVer=$verbose
 		;;
 	    p)
 		cbdir="$OPTARG"
@@ -541,7 +542,10 @@ function main(){
     done
     shift $(($OPTIND-1))
     optIssues=$@
+}
 
+function main(){
+    optParser $@
     doInit
     if [ -n "$cleanRun" ];then
 	doClean
