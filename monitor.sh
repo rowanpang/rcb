@@ -34,17 +34,6 @@ function optParser(){
     done
     shift $(($OPTIND-1))
     identify=$1
-
-    if [ -z $dirName ];then
-	if [ -z $identify ];then
-	    echo "--need identifier!! exit 1---"
-	    exit 1
-	fi
-	nodeName="$HOSTNAME"
-	dirName=$nodeName-$identify
-    fi
-
-    [ $verbose -ge 1 ] && echo "idt:$identify,dir:$dirName,verbose:$verbose"
 }
 
 function depCheck(){
@@ -92,7 +81,26 @@ verbose="1"
 pids=""
 pidfile="pid-bg.log"
 
-function main(){
+function doInit() {
+    if [ -z $dirName ];then
+	if [ -z $identify ];then
+	    echo "--need identifier!! exit 1---"
+	    exit 1
+	fi
+	nodeName="$HOSTNAME"
+	dirName=$nodeName-$identify
+    fi
+
+    if [ $verbose -ge 1 ];then
+	echo "idt:$identify,dir:$dirName,verbose:$verbose"
+	echo "-----log dir:$dirName------"
+    fi
+
+    [ -d $dirName ] && rm -rf $dirName
+    mkdir $dirName
+}
+
+function checkKill() {
     if [ -s $pidfile ];then
 	pids=`cat $pidfile`
 	[ $verbose -ge 1 ] && echo "----kill pids: $pids-----"
@@ -100,14 +108,12 @@ function main(){
 	rm -rf $pidfile
 	exit
     fi
+}
 
+function main(){
     optParser $@
-
-    [ $verbose -ge 1 ] && echo "-----log dir:$dirName------"
-
-    [ -d $dirName ] && rm -rf $dirName
-    mkdir $dirName
-
+    checkKill
+    doInit
     depCheck
     doMon
 }

@@ -400,7 +400,7 @@ function docbsubmit(){
 
     #---->block start ===> not modify this block
     echo -ne '\e[?25l'
-    echo -n "--$wkid $issue running,escape "
+    echo -ne "\t--$wkid $issue running,escape "
     tdlo=0
     echo -ne "\e[0;1;31m"
     while [[ "true" ]]; do
