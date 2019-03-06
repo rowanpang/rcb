@@ -128,8 +128,9 @@ function gotIdentify(){
 
 function preMon(){
     if [ -s $nodeinfoFile ];then
+	echo -n "---file $nodeinfoFile exist"
 	nodeinfoFile="$nodeinfoFile.`date +%s`"
-	echo "file $nodeinfoFile exist,use $nodeinfoFile"
+	echo ",use $nodeinfoFile---"
     fi
 
     for node in $nodes;do
