@@ -66,10 +66,6 @@ function gotNodePwd(){
 function saveNodeinfo() {
     node=$1
     info=$2
-    if [ -s $nodeinfoFile ];then
-	nodeinfoFile="$nodeinfoFile.`date +%s`"
-	echo -n "file $nodeinfoFile exist,use $nodeinfoFile"
-    fi
 
     [ $verbose -ge 1 ] && echo "do saveNodeinfo for node:$node,info:$info"
     for nodeinfo in $nodeinfos;do
@@ -131,6 +127,11 @@ function gotIdentify(){
 }
 
 function preMon(){
+    if [ -s $nodeinfoFile ];then
+	nodeinfoFile="$nodeinfoFile.`date +%s`"
+	echo "file $nodeinfoFile exist,use $nodeinfoFile"
+    fi
+
     for node in $nodes;do
 	[ $verbose -ge 1 ] && echo "do preMon for node:$node"
 	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d '/tmp/rMonTmp.XXXXXXXX'`
