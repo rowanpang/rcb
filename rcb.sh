@@ -467,8 +467,8 @@ function dorcb() {
 	issues="$optIssues"
     else
 	if [ X$testType == X ];then
-	    echo "testType NONE error,exit"
-	    exit
+	    echo "testType NONE error,exit 1"
+	    exit 1
 	fi
 	issuesNew=""
 	for issue in $issues ;do
