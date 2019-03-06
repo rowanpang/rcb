@@ -45,6 +45,7 @@ function doInit() {
 	echo "$cbdir not exist,exit 1"
 	exit 1
     fi
+    cbcli="$cbdir/cli.sh"
 }
 
 function gotNodePwd(){
@@ -388,12 +389,10 @@ function wkChk() {
 
 function docbCancel(){
     wkid=$1
-    cbcli="$cbdir/cli.sh"
     $cbcli cancel $wkid
 }
 
 function docbsubmit(){
-    cbcli="$cbdir/cli.sh"
     issue=$1
     [ $verbose -ge 1 ] && echo "--cosbench submit $issue---"
     tStart=`date '+%s'`
