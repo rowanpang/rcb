@@ -394,7 +394,7 @@ function docbCancel(){
 
 function docbsubmit(){
     issue=$1
-    [ $verbose -ge 1 ] && echo "--cosbench submit $issue---"
+    echo -e "\033[0;1;31m--submit for issue $issue--\033[0m"
     tStart=`date '+%s'`
 
     ret=`$cbcli submit $issue 2>/dev/null`
@@ -453,7 +453,7 @@ function docbIssues() {
 	    continue
 	fi
 
-	echo -e "\033[0;1;31m--do cosbench for issue $issue--\033[0m"
+	[ $verbose -ge 1 ] && echo "--do cosbench for issue $issue---"
 
 	#echo "do cosbench for issues $issue"
 	# ./cbTest/10m-delete.xml
