@@ -22,21 +22,28 @@ SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
 
 function sshChk() {
+    [ $verbose -ge 1 ] && echo "---in func sshChk---"
     toChk=$1
-    [ -z $dryRun ] && return || echo "sshChk dryRun return"
-    [ $verbose -ge 1 ] && echo "in func sshChk"
+
+    if ! [ -z $dryRun ];then
+	echo "sshChk dryRun return"
+	return
+    fi
+
     for cli in $toChk;do
         [ $verbose -ge 1 ] && echo -n "$cli "
-	sshpass -p $(gotNodePwd $node) ssh $cli 'ls 2>&1 >/dev/null'
+	sshpass -p $(gotNodePwd $cli) ssh $cli 'ls 2>&1 >/dev/null'
         ret=$?
         if [ $ret -ne 0 ];then
-	    [ $verbose -le 0 ] && echo -n "$cli"
+	    [ $verbose -le 0 ] && echo -n "$cli "
             echo "sshChk error,exit 1"
             exit 1
         fi
 
         [ $verbose -ge 1 ] && echo "sshChk ok"
     done
+
+    [ $verbose -ge 1 ] && echo "---out func sshChk---"
 }
 
 function doInit() {
@@ -64,7 +71,7 @@ function gotNodePwd(){
     [ -n $node ] || return
     npMatched=""
     for np in $nodesPwds;do
-	if [ $node == `echo $np | awk 'BEGIN {FS=","} {print $1}'` ];then
+	if [ X$node == X`echo $np | awk 'BEGIN {FS=","} {print $1}'` ];then
 	    #echo "match node:$node"
 	    npMatched=$np
 	    break
@@ -525,6 +532,11 @@ function mkIssueXml(){
 
     for issue in $issues;do
 	toMk=$issue
+	if [ -s $toMk ];then
+	    [ $verbose -ge 1 ] && echo "$toMk exist,skip"
+	    continue
+	fi
+
 	dir=`dirname $toMk`
 	name=`basename $toMk`
 	size=${name%-*}
@@ -546,19 +558,18 @@ function mkIssueXml(){
 		exit 1
 		;;
 	esac
-
 	op=${name%.*};op=${op#*-}
+
 	[ $verbose -ge 1 ] && echo "mkIssueXml for $toMk,name(op): $name($op)"
 
 	src=$dir/$tmpPrefix-$op.xml
-	dst=$dir/$name
 	if ! [ -s $src ];then
 	    [ $verbose -ge 1 ] && echo "tmplate $src not exist,skip"
 	    continue
 	fi
 
-	cp -f $src $dst
-	sed -i "s/4k/$size/; s/c(4)KB/c($val)$unit/" $dst
+	cp -f $src $toMk
+	sed -i "s/4k/$size/; s/c(4)KB/c($val)$unit/" $toMk
     done
     [ $verbose -ge 1 ] && echo "---out func mkIssueXml---"
 }
