@@ -495,8 +495,7 @@ function docbIssues() {
 }
 
 
-function mkfinIssues() {
-    cbTdir="./cbTest"
+function mkIssuesList() {
     if [ "X$optIssues" != X ];then
 	finIssues="$optIssues"
     else
@@ -519,8 +518,55 @@ function mkfinIssues() {
     "
 }
 
+function mkIssueXml(){
+    tmpPrefix=4k
+    issues="$@"
+    [ $verbose -ge 1 ] && echo "---in func mkIssueXml---"
+
+    for issue in $issues;do
+	toMk=$issue
+	dir=`dirname $toMk`
+	name=`basename $toMk`
+	size=${name%-*}
+	if [ X$tmpPrefix == X$size ];then
+	    continue
+	    [ $verbose -ge 1] && echo "tmpxml self,skip"
+	fi
+	val=`echo $size | tr -d '[:alpha:]'`
+	unit=`echo $size | tr -d '[:digit:]'`
+	case $unit in
+	    k)
+		unit=KB
+		;;
+	    m)
+		unit=MB
+		;;
+	    *)
+		echo "unit error $unit,exit 1"
+		exit 1
+		;;
+	esac
+
+	op=${name%.*};op=${op#*-}
+	[ $verbose -ge 1 ] && echo "mkIssueXml for $toMk,name(op): $name($op)"
+
+	src=$dir/$tmpPrefix-$op.xml
+	dst=$dir/$name
+	if ! [ -s $src ];then
+	    [ $verbose -ge 1 ] && echo "tmplate $src not exist,skip"
+	    continue
+	fi
+
+	cp -f $src $dst
+	sed -i "s/4k/$size/; s/c(4)KB/c($val)$unit/" $dst
+    done
+    [ $verbose -ge 1 ] && echo "---out func mkIssueXml---"
+}
+
 function dorcb() {
-    mkfinIssues
+    mkIssuesList
+    mkIssueXml $finIssues
+
     docbIssues "$finIssues"
 }
 
@@ -528,14 +574,16 @@ finIssues=""
 dryRun=""
 cleanRun=""
 optIssues=""
-objSize="4k,16k,256k,1m"
 freeMem=""
 verbose="0"
+
+objSize="4k,16k,256k,1m"
+cbTdir="./cbTest"
+cbdir="/root/cosbench/0.4.2.c4"
 
 nodeinfos=""
 nodeinfoFile='./nodeinfo.log'
 monScript="./monitor.sh"
-cbdir="/root/cosbench/0.4.2.c4"
 
 function usage () {
     echo "Usage :  $0 [options] [optIssues]
@@ -544,6 +592,7 @@ function usage () {
 	-d	    dryRun
 	-c	    doClean
 	-f	    dropCache	    [$freeMem]
+	-t	    test dir	    [$cbTdir]
 	-s size     objSize	    [$objSize,or size1,size2,..]
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
@@ -553,7 +602,7 @@ function usage () {
 }
 
 function optParser() {
-    while getopts ":hdcs:v:p:n:" opt;do
+    while getopts ":hdct:s:v:p:n:" opt;do
 	case $opt in
 	    h)
 		usage
@@ -563,6 +612,9 @@ function optParser() {
 		;;
 	    c)
 		cleanRun="True"
+		;;
+	    t)
+		cbTdir="$OPTARG"
 		;;
 	    s)
 		objSize="$OPTARG"
