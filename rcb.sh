@@ -86,6 +86,9 @@ function saveNodeinfo() {
 
     echo "$nodeinfos" > $nodeinfoFile
 }
+function rmNodeinfofile {
+    [ -e $nodeinfoFile ] && rm -f $nodeinfoFile
+}
 
 function gotNodeinfos() {
     if [ -z "$nodeinfos" ];then
@@ -94,7 +97,6 @@ function gotNodeinfos() {
 	    exit 1
 	fi
 	nodeinfos=`cat $nodeinfoFile`
-	#rm -f $nodeinfoFile
     fi
     echo "$nodeinfos"
 }
@@ -586,6 +588,8 @@ function main(){
     else
 	dorcb
     fi
+
+    rmNodeinfofile
 }
 
 main $@
