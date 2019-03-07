@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<workload name="ips-cos-20m-5min-r" description="sample benchmark for s3">
+    <workflow>
+	<workstage name="init_create_bucket">
+	    <work name="init1" type="init" workers="1" config="cprefix=ips-con1;containers=r(1,3)" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+	    </work>
+	    <work name="init2" type="init" workers="1" config="cprefix=ips-con2;containers=r(1,3)" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+	    </work>
+	    <work name="init3" type="init" workers="1" config="cprefix=ips-con3;containers=r(1,3)" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+	    </work>
+	</workstage>
+
+	<workstage name="prepare">
+	    <work type="prepare" workers="100" config="cprefix=ips-con1;containers=r(1,3);objects=r(1,1200);sizes=c(20)MB" driver="driver1" >
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+	    </work>
+	    <work type="prepare" workers="100" config="cprefix=ips-con2;containers=r(1,3);objects=r(1,1200);sizes=c(20)MB" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+	    </work>
+	    <work type="prepare" workers="100" config="cprefix=ips-con3;containers=r(1,3);objects=r(1,1200);sizes=c(20)MB" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+	    </work>
+	</workstage>
+
+<!-- read -->
+	<workstage name="ips_20m_5min_read*50">
+	    <work name="main" workers="50" runtime="300" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con1;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="50" runtime="300" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con2;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="50" runtime="300" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con3;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	</workstage>
+
+	<workstage name="ips_20m_5min_read*200">
+	    <work name="main" workers="200" runtime="300" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con1;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="200" runtime="300" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con2;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="200" runtime="300" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con3;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	</workstage>
+
+	<workstage name="ips_20m_5min_read*400">
+	    <work name="main" workers="400" runtime="300"  driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con1;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="400" runtime="300"  driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con2;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="400" runtime="300"  driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con3;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	</workstage>
+
+	<workstage name="ips_20m_5min_read*600">
+	    <work name="main" workers="600" runtime="300" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con1;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="600" runtime="300" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con2;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="600" runtime="300" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con3;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	</workstage>
+
+	<workstage name="ips_20m_5min_read*1000">
+	    <work name="main" workers="1000" runtime="300" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con1;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="1000" runtime="300" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con2;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="1000" runtime="300" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con3;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	</workstage>
+
+	<workstage name="ips_20m_5min_read*2000">
+	    <work name="main" workers="2000" runtime="300" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con1;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="2000" runtime="300" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con2;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	    <work name="main" workers="2000" runtime="300" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+		<operation type="read" ratio="100" config="cprefix=ips-con3;containers=u(1,3);objects=u(1,1200)" />
+	    </work>
+	</workstage>
+
+<!-- delete -->
+	<workstage name="cleanup">
+	    <work type="cleanup" workers="50" config="cprefix=ips-con1;containers=r(1,3);objects=r(1,1200)" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+	    </work>
+	    <work type="cleanup" workers="50" config="cprefix=ips-con2;containers=r(1,3);objects=r(1,1200)" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+	    </work>
+	    <work type="cleanup" workers="50" config="cprefix=ips-con3;containers=r(1,3);objects=r(1,1200)" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+	    </work>
+	</workstage>
+
+	<workstage name="dispose">
+	    <work type="dispose" workers="50" config="cprefix=ips-con1;containers=r(1,3)" driver="driver1">
+		<storage type="s3" config="accesskey=IBYCGU83H6B5UHY41W9U;secretkey=MTJejUGjdH3e4priwmHlOpCOk4Enhgnl5bmmc3AV;endpoint=http://192.168.11.1:8080;timeout=300000" />
+	    </work>
+	    <work type="dispose" workers="50" config="cprefix=ips-con2;containers=r(1,3)" driver="driver2">
+		<storage type="s3" config="accesskey=Z2WNN6BAW065YU4L5YK4;secretkey=89kABPpTGvGmrhMJWN5p51Kq3c0RtySo0jfpPLjc;endpoint=http://192.168.11.2:8080;timeout=300000" />
+	    </work>
+	    <work type="dispose" workers="50" config="cprefix=ips-con3;containers=r(1,3)" driver="driver3">
+		<storage type="s3" config="accesskey=ZN0EE7F6GWW05FHQDKI0;secretkey=UpTBSdYUffnfiWahuDMvD7NWIkQcCjHGNh1uMK8A;endpoint=http://192.168.11.3:8080;timeout=300000" />
+	    </work>
+	</workstage>
+    </workflow>
+</workload>

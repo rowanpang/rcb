@@ -21,25 +21,42 @@ testOps="
 SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
 
+function sshChk() {
+    toChk=$1
+    [ -z $dryRun ] && return || echo "sshChk dryRun return"
+    [ $verbose -ge 1 ] && echo "in func sshChk"
+    for cli in $toChk;do
+        [ $verbose -ge 1 ] && echo -n "$cli "
+	sshpass -p $(gotNodePwd $node) ssh $cli 'ls 2>&1 >/dev/null'
+        ret=$?
+        if [ $ret -ne 0 ];then
+	    [ $verbose -le 0 ] && echo -n "$cli"
+            echo "sshChk error,exit 1"
+            exit 1
+        fi
+
+        [ $verbose -ge 1 ] && echo "sshChk ok"
+    done
+}
+
 function doInit() {
     monVer=$verbose
 
     command -v sshpass >/dev/null 2>&1 || yum install sshpass	    #need epel
     command -v fio >/dev/null 2>&1 || yum install fio
 
-    for np in $nodesPwds;do
-	n=${np%,*}
-	nodes="$nodes $n"
-    done
-
-    node=$n
-    #echo "--------$SSHPSCP"
-
     if ! [ -d $cbdir ];then
 	echo "$cbdir not exist,exit 1"
 	exit 1
     fi
     cbcli="$cbdir/cli.sh"
+
+    for np in $nodesPwds;do
+	n=${np%,*}
+	nodes="$nodes $n"
+    done
+
+    sshChk $nodes
 }
 
 function gotNodePwd(){
@@ -450,6 +467,7 @@ function docbsubmit(){
 
 function docbIssues() {
     issues="$@"
+    preMon
     for issue in $issues ;do
 	if ! [ -s $issue ];then
 	    echo "test $issue file not exist skip "
@@ -476,10 +494,9 @@ function docbIssues() {
     postMon
 }
 
-function dorcb() {
-    cbTdir="./cbTest"
 
-    preMon
+function mkfinIssues() {
+    cbTdir="./cbTest"
     if [ "X$optIssues" != X ];then
 	finIssues="$optIssues"
     else
@@ -489,7 +506,10 @@ function dorcb() {
 	fi
 	issuesNew=""
 	for op in $testOps;do
-	    issuesNew="$issuesNew $cbTdir/$objSize-$op.xml"
+	    objs="${objSize//,/ }"
+	    for s in $objs;do
+		issuesNew="$issuesNew $cbTdir/$s-$op.xml"
+	    done
 	done
 	finIssues=$issuesNew
     fi
@@ -497,19 +517,24 @@ function dorcb() {
     echo "finally issues:
 	$finIssues
     "
+}
+
+function dorcb() {
+    mkfinIssues
     docbIssues "$finIssues"
 }
 
+finIssues=""
 dryRun=""
 cleanRun=""
 optIssues=""
-objSize=""
+objSize="4k,16k,256k,1m"
 freeMem=""
 verbose="0"
 
-monScript="./monitor.sh"
 nodeinfos=""
 nodeinfoFile='./nodeinfo.log'
+monScript="./monitor.sh"
 cbdir="/root/cosbench/0.4.2.c4"
 
 function usage () {
@@ -518,8 +543,8 @@ function usage () {
 	-h	    Display this message
 	-d	    dryRun
 	-c	    doClean
+	-f	    dropCache	    [$freeMem]
 	-s size     objSize	    [$objSize,or size1,size2,..]
-	-f	    free mem ,dropCache	    [$freeMem]
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
 	-n nodeinfoFile	    nodeinfo file name [$nodeinfoFile]
@@ -528,7 +553,7 @@ function usage () {
 }
 
 function optParser() {
-    while getopts ":hdct:v:p:n:" opt;do
+    while getopts ":hdcs:v:p:n:" opt;do
 	case $opt in
 	    h)
 		usage
@@ -539,7 +564,7 @@ function optParser() {
 	    c)
 		cleanRun="True"
 		;;
-	    t)
+	    s)
 		objSize="$OPTARG"
 		;;
 	    f)
