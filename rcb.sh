@@ -12,7 +12,7 @@ nodesPwds="
 "
 
 #ops name
-issues="
+testOps="
     write
     read
     delete
@@ -62,7 +62,6 @@ function gotNodePwd(){
     echo "$pwd"
 }
 
-
 function saveNodeinfo() {
     node=$1
     info=$2
@@ -86,6 +85,7 @@ function saveNodeinfo() {
 
     echo "$nodeinfos" > $nodeinfoFile
 }
+
 function rmNodeinfofile {
     [ -e $nodeinfoFile ] && rm -f $nodeinfoFile
 }
@@ -481,29 +481,29 @@ function dorcb() {
 
     preMon
     if [ "X$optIssues" != X ];then
-	issues="$optIssues"
+	finIssues="$optIssues"
     else
-	if [ X$testType == X ];then
-	    echo "testType NONE error,exit 1"
+	if [ X$objSize == X ];then
+	    echo "objSize NONE error,exit 1"
 	    exit 1
 	fi
 	issuesNew=""
-	for issue in $issues ;do
-	    issuesNew="$issuesNew $cbTdir/$testType-$issue.xml"
+	for op in $testOps;do
+	    issuesNew="$issuesNew $cbTdir/$objSize-$op.xml"
 	done
-	issues=$issuesNew
+	finIssues=$issuesNew
     fi
 
     echo "finally issues:
-	$issues
+	$finIssues
     "
-    docbIssues "$issues"
+    docbIssues "$finIssues"
 }
 
 dryRun=""
 cleanRun=""
 optIssues=""
-testType=""
+objSize=""
 freeMem=""
 verbose="0"
 
@@ -518,7 +518,7 @@ function usage () {
 	-h	    Display this message
 	-d	    dryRun
 	-c	    doClean
-	-t type	    testType	    [$testType]
+	-s size     objSize	    [$objSize,or size1,size2,..]
 	-f	    free mem ,dropCache	    [$freeMem]
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
@@ -540,7 +540,7 @@ function optParser() {
 		cleanRun="True"
 		;;
 	    t)
-		testType="$OPTARG"
+		objSize="$OPTARG"
 		;;
 	    f)
 		freeMem="True"
