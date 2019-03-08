@@ -37,8 +37,8 @@ function optParser(){
 }
 
 function depCheck(){
-    command -v dstat >/dev/null 2>&1 || yum install dstat
-    command -v pidstat >/dev/null 2>&1 || yum install sysstat
+    command -v dstat >/dev/null 2>&1 || yum --assumeyes install dstat
+    command -v pidstat >/dev/null 2>&1 || yum --assumeyes install sysstat
 }
 
 function doMon(){
