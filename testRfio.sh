@@ -42,7 +42,7 @@ function dofiosubmit() {
     #fio-rbd/fioT-4k-rw.txt
     dirName=`dirname $issue`
     devType=${dirName#*-}
-    resDir="fio-$devType-res-${idtSuffix//-/_}-`date +%s`"
+    resDir="fioR-$devType-${idtSuffix//-/_}-`date +%s`"
     if [ -d $resDir ];then
         echo "$resDir duplicate, mv to date +%s format"
         mv $resDir $resDir-`date +%s`
