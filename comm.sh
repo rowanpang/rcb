@@ -27,7 +27,7 @@ function saveNodeinfo() {
     node=$1
     info=$2
 
-    [ $verbose -ge 1 ] && echo "do saveNodeinfo for node:$node,info:$info"
+    [ $verbose -ge 1 ] && echo "do saveNodeinfo for $node,infoMsg:$info"
     for nodeinfo in $nodeinfos;do
 	if [ $node == `echo $nodeinfo | awk 'BEGIN {FS=","} {print $1}'` ];then
 	    #echo "match node:$node"

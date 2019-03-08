@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fioTestOps="rand-write,rand-read,rand-rw"
+fioTestOps="rand-write,seq-write,rand-read,seq-read,rand-rw,seq-rw"
 fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
@@ -26,12 +26,18 @@ function dorfio(){
 
     dofioInit
     mkIssuesList $objSize $testOps $tCfgDir
-    dofioIssues $finInssues
+
+    dofioIssues $finIssues
 }
 
 function dofiosubmit() {
     issue=$1
-    echo -e "\033[0;1;31m--do dofio for issue $issue--\033[0m"
+    echo -e "\033[0;1;31m--do dofiosubmit for issue $issue--\033[0m"
+
+    if ! [ -z $dryRun ];then
+	[ $verbose -ge 1 ] && echo -e "\t--dofiosubmit dryRun return---"
+	return
+    fi
 
     #fio-rbd/fioT-4k-rw.txt
     dirName=`dirname $issue`
@@ -58,6 +64,7 @@ function dofiosubmit() {
 
 function dofioIssues() {
     issues="$@"
+    preMon
     for issue in $issues ;do
 	if ! [ -s $issue ];then
 	    echo "test $issue file not exist skip "
@@ -71,34 +78,9 @@ function dofioIssues() {
 	idtSuffix=${issue##*/}		    #fioT-xx.txt
 	idtSuffix=${idtSuffix%.*}	    #fioT-xx
 	startMon $idtSuffix
-	if [ -z $dryRun ];then
-	    dofiosubmit $issue
-	fi
+	dofiosubmit $issue
 	stopMonGetRet
 	sleep 1
     done
     postMon
-}
-
-function dofio() {
-    preMon
-    if [ X$optIssues != X ];then
-	issues=$optIssues
-    else
-	#根据testType 构造issue fileNames
-	if [ X$testType == X ];then
-	    echo "testType NONE error,exit"
-	    exit
-	fi
-	issuesNew=""
-	for issue in $issues ;do
-	    issuesNew="$issuesNew fioT-$testType/$issue"
-	done
-	issues=$issuesNew
-    fi
-
-    echo "finally issues:
-	$issues
-    "
-    dofioIssues "$issues"
 }
