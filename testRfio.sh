@@ -32,7 +32,7 @@ function dorfio(){
 
 function dofiosubmit() {
     issue=$1
-    echo -e "\033[0;1;31m--do dofiosubmit for issue $issue--\033[0m"
+    echo -e "\033[0;1;31m--do dofiosubmit for issue $issue --\033[0m"
 
     if ! [ -z $dryRun ];then
 	[ $verbose -ge 1 ] && echo -e "\t--dofiosubmit dryRun return---"
