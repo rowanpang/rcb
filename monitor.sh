@@ -43,11 +43,11 @@ function depCheck(){
 
 function doMon(){
     #disk
-    iostat sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm 1 -m > $dirName/disk.log &
+    iostat -m 1 sd{a..z} sda{a..z} > $dirName/disk.log &
     pids="$!"
 
     #disk-extra
-    iostat sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm 1 -m -x > $dirName/disk-extra.log &
+    iostat -m -x 1 sd{a..z} sda{a..z} > $dirName/disk-extra.log &
     pids="$pids $!"
 
     #net
