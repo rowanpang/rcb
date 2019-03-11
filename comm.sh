@@ -116,8 +116,16 @@ function sshChk() {
 
 function commInit() {
     monVer=$verbose
-    command -v sshpass >/dev/null 2>&1 || yum install sshpass	    #need epel
-    command -v fio >/dev/null 2>&1 || yum install fio
+    command -v sshpass >/dev/null 2>&1
+    if ! [ $? ];then
+	echo "yum install dep: sshpass"
+	yum install sshpass
+    fi
+    command -v fio >/dev/null 2>&1
+    if ! [ $? ];then
+	echo "yum install dep: fio"
+	yum install fio
+    fi
 
     for np in $nodesPwds;do
 	n=${np%,*}
