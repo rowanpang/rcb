@@ -69,6 +69,10 @@ function doMon(){
     pidstat -l -t -d -u -C "fio|tgtd|icfs|ceph-osd|radosgw" 1 > $dirName/pidstat.log &
     pids="$pids $!"
 
+    #top
+    top -d 1 -b -i -c -w > $dirName/top.log &
+    pids="$pids $!"
+
     #dstat
     dstat --nocolor > $dirName/dstat.log &
     pids="$pids $!"
