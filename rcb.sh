@@ -87,7 +87,7 @@ function cmdChose() {
 }
 
 function main(){
-    [ -s nodeMon.cfg ] && source nodeMon.cfg
+    [ -s nodeInfo.cfg ] && source nodeInfo.cfg
     cmdChose $@
 
     rmNodeinfofile
@@ -107,8 +107,10 @@ nodesToMonPwds="
 :<<EOF
     nodes run with fio --server,plus localhost exec fio
     must contain in then nodesToMonPwds
+    ref ./lib/testRfio.sh for usage
 EOF
-fioPressNodes=""
+fioPressNodes=" "
+fioPressNodesIssueChange=" "
 
 finIssues=""
 dryRun=""

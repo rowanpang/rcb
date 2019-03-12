@@ -5,10 +5,17 @@ fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
 fioClients=""
-fioPressNodes=""
+fioPressNodes="
+    172.16.18.219
+    172.16.18.217
+"
+fioPressNodesIssueChange="
+	rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb3#pool=,pool-bcea376d9b7648df96cb4cf285e12e3A
+	rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb7
+"
+
 rfioSvrWorkDir="/tmp/rfioServer"
 rfioSvrPidfileName="fioServerPid.log"
-rfioSvrCmd="fio --server --daemonize=$rfioSvrPidfileName"
 
 function dofioOnCtrlC(){
     verbose=7
@@ -22,6 +29,12 @@ function dofioOnCtrlC(){
 
 function fServerStart(){
     pr_debug "in func fServerStart"
+    if ! [ -z $dryRun ];then
+	[ $verbose -ge 1 ] && echo -e "\t--fServerStart dryRun return---"
+	return
+    fi
+
+    rfioSvrCmd="fio --server --daemonize=$rfioSvrPidfileName"
 
     sshChk $fioPressNodes
     for node in $fioPressNodes;do
@@ -35,6 +48,11 @@ function fServerStart(){
 function fServerStop(){
     pr_debug "in func fServerStop"
 
+    if ! [ -z $dryRun ];then
+	[ $verbose -ge 1 ] && echo -e "\t--fServerStart dryRun return---"
+	return
+    fi
+
     echo "kill fio client with server: $fioClients"
     kill $fioClients
 
@@ -45,19 +63,62 @@ function fServerStop(){
     pr_debug "out func fServerStop"
 }
 
+function fServerMkIssue(){
+    pr_debug "in func fServerMkIssue"
+    src=$1
+    dst=$2
+    idx=$3
+
+    cp -f $src $dst
+
+    i=1
+    for chgs in $fioPressNodesIssueChange;do
+	[ $i -eq $idx ] && break;
+	((i++))
+    done
+
+    chgs=${chgs//#/ }
+
+    for chg in $chgs;do
+	chg=${chg//,/ }
+	key=`echo $chg | awk '{print $1}'`
+	sub=`echo $chg | awk '{print $2}'`
+
+	sed -i "s#$key.*#$key$sub#" $dst
+    done
+    pr_debug "out func fServerMkIssue"
+}
+
 function fServerSubmit(){
     pr_debug "in func fServerSubmit"
 
     issue=$1
-    for node in $fioPressNodes;do
-	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
-	resLog="$resDir/fioL-$idtSuffix.log.$nName"
-	fio --output $resLog --client $node $issue 2>&1 >/dev/null &
+    i=1
+    dir=`dirname $issue`
+    name=`basename $issue`
 
+    for node in $fioPressNodes;do
+	if ! [ -z $dryRun ];then
+	    nName=host$i
+	else
+	    nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
+	fi
+
+	resLog="$resDir/fioL-$idtSuffix.log.$nName"
+
+	issueNew="$dir/s$i-$name"
+	fServerMkIssue $issue $issueNew $i
+	((i++))
+
+	if ! [ -z $dryRun ];then
+	    [ $verbose -ge 1 ] && echo -e "\t--fServerSubmit dryRun continue---"
+	    continue
+	fi
+	fio --output $resLog --client $node $issue 2>&1 >/dev/null &
 	fioClients="$fioClients $!"
     done
 
-    [ X"$fioPressNode" !=X ] && sleep 5
+    [ X"$fioPressNodes" != X ] && sleep 5
     pr_debug "out func fServerSubmit"
 }
 
@@ -140,3 +201,15 @@ function dofioIssues() {
     done
     postMon
 }
+
+function testMain(){
+    source ./lib/comm.sh
+    verbose=7
+    dryRun="yes"
+    fServerStart
+    fServerSubmit ./fioT-rbd/4k-rand-rw
+    sleep 50
+    fServerStop
+}
+
+[ X`basename $0` == XtestRfio.sh ] && testMain
