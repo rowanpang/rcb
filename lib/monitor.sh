@@ -98,7 +98,7 @@ function doMon(){
 	-w: wild show	#confilict with -o
 	-o: sort by
 EOF
-    top -d 1 -b -i -c -o RES > $dirName/top.log &
+    COLUMNS=167 top -d 1 -b -i -c -o RES > $dirName/top.log &
     pids="$pids $!"
 
     #dstat
