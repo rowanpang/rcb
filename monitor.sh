@@ -67,7 +67,7 @@ function doMon(){
     pids="$!"
 
     #disk-extra
-    iostat -m -x 1 sd{a..z} sda{a..z} > $dirName/disk-extra.log &
+    iostat -m -x 1 sd{a..z} sda{a..z} > $dirName/disk.extra.log &
     pids="$pids $!"
 
     #net
@@ -78,7 +78,7 @@ function doMon(){
     sar -u 1 > $dirName/cpu.log	&
     pids="$pids $!"
 
-    sar -P ALL 1 > $dirName/cpuPer.log 	&
+    sar -P ALL 1 > $dirName/cpu.per.log 	&
     pids="$pids $!"
 
     #mem
