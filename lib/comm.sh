@@ -125,7 +125,7 @@ function sshChk() {
 
     for cli in $toChk;do
         [ $verbose -ge 1 ] && echo -n "$cli "
-	sshpass -p $(gotNodePwd $cli) ssh $cli 'ls 2>&1 >/dev/null'
+	sshpass -p $(gotNodePwd $cli) ssh $cli 'ls >/dev/null 2>&1'
         ret=$?
         if [ $ret -ne 0 ];then
 	    [ $verbose -le 0 ] && echo -n "$cli "

@@ -38,9 +38,9 @@ function fServerStart(){
 
     sshChk $fioPressNodes
     for node in $fioPressNodes;do
-	sshpass -p $(gotNodePwd $node) ssh $node "command -v fio 2>&1 >/dev/null || yum --assumeyes install fio"
-	sshpass -p $(gotNodePwd $node) ssh $node "mkdir -p $rfioSvrWorkDir 2>&1 >/dev/null"
-	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && $rfioSvrCmd 2>&1 >/dev/null"
+	sshpass -p $(gotNodePwd $node) ssh $node "command -v fio >/dev/null 2>&1|| yum --assumeyes install fio"
+	sshpass -p $(gotNodePwd $node) ssh $node "mkdir -p $rfioSvrWorkDir >/dev/null 2>&1"
+	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && $rfioSvrCmd >/dev/null 2>&1"
     done
     pr_debug "out func fServerStart"
 }
@@ -54,10 +54,9 @@ function fServerStop(){
     fi
 
     echo "kill fio client : $fioClient"
-    kill $fioClient 2>&1 >/dev/null
-
+    kill $fioClient >/dev/null 2>&1
     for node in $fioPressNodes;do
-	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && rfioPid=\$(cat $rfioSvrPidfileName) && kill \$rfioPid 2>&1 >/dev/null"
+	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && rfioPid=\$(cat $rfioSvrPidfileName) && kill \$rfioPid >/dev/null 2>&1"
 	sshpass -p $(gotNodePwd $node) ssh $node "rm -rf $rfioSvrWorkDir"
     done
 
@@ -115,7 +114,7 @@ function fServerSubmit(){
 	    [ $verbose -ge 1 ] && echo -e "\t--fServerSubmit dryRun continue---"
 	    continue
 	fi
-	fio --output $resfile --client $node $issueNew 2>&1 >/dev/null &
+	fio --output $resfile --client $node $issueNew >/dev/null 2>&1 &
 	fioClient="$!"
     done
 
@@ -172,7 +171,7 @@ function dofiosubmit() {
     [ $verbose -ge 1 ] && echo "resLogfile: $resLog"
 
     fio $issue --output $resLog
-    kill $fioClient 2>&1 >/dev/null
+    kill $fioClient >/dev/null 2>&1
 
     echo
     resTxt=`grep ': IOPS=' $resLog*`
