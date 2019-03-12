@@ -115,7 +115,7 @@ function fServerSubmit(){
 	    [ $verbose -ge 1 ] && echo -e "\t--fServerSubmit dryRun continue---"
 	    continue
 	fi
-	fio --output $resfile --client $node $issue 2>&1 >/dev/null &
+	fio --output $resfile --client $node $issueNew 2>&1 >/dev/null &
 	fioClients="$fioClients $!"
     done
 
