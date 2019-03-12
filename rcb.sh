@@ -87,7 +87,7 @@ function cmdChose() {
 }
 
 function main(){
-    [ -s nodeInfo.cfg ] && source nodeInfo.cfg
+    [ -s ./nodeInfo.cfg ] && source nodeInfo.cfg
     cmdChose $@
 
     rmNodeinfofile

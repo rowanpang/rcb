@@ -14,7 +14,7 @@ fioPressNodesIssueChange="
     rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb7
 "
 
-rfioSvrWorkDir="/tmp/rfioServer"
+rfioSvrWorkDir="/tmp/rfioServer-22a42fb0e"
 rfioSvrPidfileName="fioServerPid.log"
 
 function dofioOnCtrlC(){
@@ -58,6 +58,7 @@ function fServerStop(){
 
     for node in $fioPressNodes;do
 	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && rfioPid=\$(cat $rfioSvrPidfileName) && kill \$rfioPid 2>&1 >/dev/null"
+	sshpass -p $(gotNodePwd $node) ssh $node "rm -rf $rfioSvrWorkDir"
     done
 
     pr_debug "out func fServerStop"
