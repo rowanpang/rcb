@@ -1,5 +1,6 @@
 #!/bin/bash
 
+shToScp="./lib/monitor.sh"
 monScript="./monitor.sh"
 
 function preMon(){
@@ -30,7 +31,7 @@ function preMon(){
 
 	#nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
 	if [ -z $dryRun ];then
-	    sshpass -p $(gotNodePwd $node) scp $monScript root@$node:$workDir
+	    sshpass -p $(gotNodePwd $node) scp $shToScp root@$node:$workDir
 	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && chmod +x ./$monScript"
 	    if [ $node != '127.0.0.1' -a X$freeMem != X ];then
 		sshpass -p $(gotNodePwd $node) ssh $node "echo 1 > /proc/sys/vm/drop_caches"

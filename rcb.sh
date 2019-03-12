@@ -1,9 +1,9 @@
 #!/bin/bash
 
-source ./comm.sh
-source ./mon.sh
-source ./testRcb.sh
-source ./testRfio.sh
+source ./lib/comm.sh
+source ./lib/mon.sh
+source ./lib/testRcb.sh
+source ./lib/testRfio.sh
 
 :<<EOF
     node to monitor
