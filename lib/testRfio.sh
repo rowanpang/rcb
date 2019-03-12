@@ -107,7 +107,7 @@ function fServerSubmit(){
 
 	resfile="$resDir/fioL-$idtSuffix.log.$nName"
 
-	issueNew="$dir/s$i-$name"
+	issueNew="$dir/rfioSvr$i-$name"
 	fServerMkIssue $issue $issueNew $i
 	((i++))
 

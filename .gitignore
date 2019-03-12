@@ -1,3 +1,5 @@
 *.swp
 res-*
 nodeinfo.log
+nodeInfo.cfg
+fioT-rbd/rfioSvr*
