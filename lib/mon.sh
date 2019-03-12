@@ -102,15 +102,16 @@ function postMon() {
 }
 
 function doClean() {
+    pr_debug "in func doClean"
     for node in $nodes;do
-	echo "do doClean for node:$node"
+	echo -e "\tdo doClean for node:$node"
 	workDir=`gotWorkDir $node`
 	identify=`gotIdentify $node`
-	echo "wkdir:$workDir"
-	echo "idt:$identify"
+	pr_info "wkdir:$workDir"
+	pr_info "idt:$identify"
 
 	if [ -z "$workDir" ];then
-	    echo 'monitor workDir not exist continue'
+	    pr_warn 'monitor workDir not exist continue'
 	    continue
 	fi
 
@@ -122,5 +123,5 @@ function doClean() {
 	fi
 	echo
     done
-    echo
+    pr_debug "out func doClean"
 }

@@ -4,6 +4,7 @@ source ./lib/comm.sh
 source ./lib/mon.sh
 source ./lib/testRcb.sh
 source ./lib/testRfio.sh
+source ./lib/testClean.sh
 
 :<<EOF
     node to monitor
@@ -88,7 +89,7 @@ function cmdChose() {
 	    dorfio $@
 	    ;;
 	clean)
-	    doClean
+	    testClean $@
 	    ;;
 	*)
 	    echo "cmd error exit 1"
