@@ -4,7 +4,7 @@ fioTestOps="rand-write,seq-write,rand-read,seq-read,rand-rw,seq-rw"
 fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
-fioClients=""
+fioClient=""
 fioPressNodes="
     172.16.18.219
     172.16.18.217
@@ -53,8 +53,8 @@ function fServerStop(){
 	return
     fi
 
-    echo "kill fio client with server: $fioClients"
-    kill $fioClients
+    echo "kill fio client : $fioClient"
+    kill $fioClient 2>&1 >/dev/null
 
     for node in $fioPressNodes;do
 	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && rfioPid=\$(cat $rfioSvrPidfileName) && kill \$rfioPid 2>&1 >/dev/null"
@@ -116,7 +116,7 @@ function fServerSubmit(){
 	    continue
 	fi
 	fio --output $resfile --client $node $issueNew 2>&1 >/dev/null &
-	fioClients="$fioClients $!"
+	fioClient="$!"
     done
 
     [ X"$fioPressNodes" != X ] && sleep 5
@@ -172,6 +172,7 @@ function dofiosubmit() {
     [ $verbose -ge 1 ] && echo "resLogfile: $resLog"
 
     fio $issue --output $resLog
+    kill $fioClient 2>&1 >/dev/null
 
     echo
     resTxt=`grep ': IOPS=' $resLog`
