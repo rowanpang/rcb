@@ -6,18 +6,6 @@ source ./lib/testRcb.sh
 source ./lib/testRfio.sh
 source ./lib/testClean.sh
 
-:<<EOF
-    node to monitor
-    192.168.100.100,IPS@jjfab2018
-    192.168.100.101,IPS@jjfab2018
-    192.168.100.102,IPS@jjfab2018
-EOF
-
-nodes=""
-nodesPwds="
-    127.0.0.1,IPS@jjfab2018
-"
-
 SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
 
@@ -99,10 +87,28 @@ function cmdChose() {
 }
 
 function main(){
+    [ -s nodeMon.cfg ] && source nodeMon.cfg
     cmdChose $@
 
     rmNodeinfofile
 }
+
+:<<EOF
+    node to monitor
+    192.168.100.100,IPS@jjfab2018
+    192.168.100.101,IPS@jjfab2018
+    192.168.100.102,IPS@jjfab2018
+EOF
+nodesToMon=""
+nodesToMonPwds="
+    127.0.0.1,IPS@jjfab2018
+"
+
+:<<EOF
+    nodes run with fio --server,plus localhost exec fio
+    must contain in then nodesToMonPwds
+EOF
+fioPressNodes=""
 
 finIssues=""
 dryRun=""

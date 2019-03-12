@@ -1,6 +1,9 @@
 #!/bin/bash
 
 verbose="7"
+nodeinfos=""
+nodeinfoFile='./nodeinfo.log'
+
 function pr_info(){
     [ $verbose -ge 2 ] && echo "$@"
 }
@@ -25,14 +28,11 @@ function pr_hint(){
     echo -e "\033[1;31m" "$@" "\033[0m"
 }
 
-nodeinfos=""
-nodeinfoFile='./nodeinfo.log'
-
 function gotNodePwd(){
     node=$1
     [ -n $node ] || return
     npMatched=""
-    for np in $nodesPwds;do
+    for np in $nodesToMonPwds;do
 	if [ X$node == X`echo $np | awk 'BEGIN {FS=","} {print $1}'` ];then
 	    #echo "match node:$node"
 	    npMatched=$np
@@ -186,14 +186,13 @@ function commInit() {
     monVer=$verbose
 
     cmdChkInstall sshpass
-    cmdChkInstall fio
 
-    for np in $nodesPwds;do
+    for np in $nodesToMonPwds;do
 	n=${np%,*}
-	nodes="$nodes $n"
+	nodesToMon="$nodesToMon $n"
     done
 
-    sshChk $nodes
+    sshChk $nodesToMon
 }
 
 [ X$0 == Xcomm.sh ] && commInit

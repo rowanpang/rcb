@@ -10,7 +10,11 @@ function preMon(){
 	echo ",use $nodeinfoFile---"
     fi
 
-    for node in $nodes;do
+    echo "nodes to Mon are:
+	$nodesToMon
+    "
+
+    for node in $nodesToMon;do
 	[ $verbose -ge 1 ] && echo "do preMon for node:$node"
 	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d '/tmp/rMonTmp.XXXXXXXX'`
 	case $? in
@@ -47,7 +51,7 @@ function preMon(){
 function startMon(){
     idtSuffix=$1
     [ -n $idtSuffix ] || idtSuffix="myRead"
-    for node in $nodes;do
+    for node in $nodesToMon;do
 	[ $verbose -ge 1 ] && echo "do startMon for node:$node"
 	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
 	identify="$nName-$idtSuffix"
@@ -61,7 +65,7 @@ function startMon(){
 }
 
 function stopMonGetRet(){
-    for node in $nodes;do
+    for node in $nodesToMon;do
 	[ $verbose -ge 1 ] && echo "do stopMonGetRet for node:$node"
 	workDir=`gotWorkDir $node`
 	identify=`gotIdentify $node`
@@ -83,7 +87,7 @@ function stopMonGetRet(){
 }
 
 function postMon() {
-    for node in $nodes;do
+    for node in $nodesToMon;do
 	[ $verbose -ge 1 ] && echo "do postMon for node:$node"
 	workDir=`gotWorkDir $node`
 	#echo $workDir
@@ -103,7 +107,7 @@ function postMon() {
 
 function doClean() {
     pr_debug "in func doClean"
-    for node in $nodes;do
+    for node in $nodesToMon;do
 	echo -e "\tdo doClean for node:$node"
 	workDir=`gotWorkDir $node`
 	identify=`gotIdentify $node`

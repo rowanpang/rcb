@@ -4,6 +4,8 @@ fioTestOps="rand-write,seq-write,rand-read,seq-read,rand-rw,seq-rw"
 fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
+fioPressNodes=""
+
 function dofioOnCtrlC(){
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
@@ -11,11 +13,23 @@ function dofioOnCtrlC(){
     exit 1
 }
 
+function fServerStart(){
+    sshChk $fioPressNodes
+
+    fioSvrCmd="fio "
+
+    for node in $fioPressNodes;do
+	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d '/tmp/rfioSvr.XXXXXXXX'`
+	shpass -p $(gotNodePwd $node) ssh $node "cd $workDir && "
+    done
+
+}
 
 function dofioInit(){
     trap 'dofioOnCtrlC' INT
 
     commInit
+    cmdChkInstall fio
 }
 
 function dorfio(){
