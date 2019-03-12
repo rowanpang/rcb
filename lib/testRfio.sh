@@ -4,25 +4,61 @@ fioTestOps="rand-write,seq-write,rand-read,seq-read,rand-rw,seq-rw"
 fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
+fioClients=""
 fioPressNodes=""
+rfioSvrWorkDir="/tmp/rfioServer"
+rfioSvrPidfileName="fioServerPid.log"
+rfioSvrCmd="fio --server --daemonize=$rfioSvrPidfileName"
 
 function dofioOnCtrlC(){
+    verbose=7
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
     doClean
+
+    fServerStop
     exit 1
 }
 
 function fServerStart(){
-    sshChk $fioPressNodes
+    pr_debug "in func fServerStart"
 
-    fioSvrCmd="fio "
+    sshChk $fioPressNodes
+    for node in $fioPressNodes;do
+	sshpass -p $(gotNodePwd $node) ssh $node "command -v fio 2>&1 >/dev/null || yum --assumeyes install fio"
+	sshpass -p $(gotNodePwd $node) ssh $node "mkdir -p $rfioSvrWorkDir 2>&1 >/dev/null"
+	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && $rfioSvrCmd 2>&1 >/dev/null"
+    done
+    pr_debug "out func fServerStart"
+}
+
+function fServerStop(){
+    pr_debug "in func fServerStop"
+
+    echo "kill fio client with server: $fioClients"
+    kill $fioClients
 
     for node in $fioPressNodes;do
-	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d '/tmp/rfioSvr.XXXXXXXX'`
-	shpass -p $(gotNodePwd $node) ssh $node "cd $workDir && "
+	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && rfioPid=\$(cat $rfioSvrPidfileName) && kill \$rfioPid 2>&1 >/dev/null"
     done
 
+    pr_debug "out func fServerStop"
+}
+
+function fServerSubmit(){
+    pr_debug "in func fServerSubmit"
+
+    issue=$1
+    for node in $fioPressNodes;do
+	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
+	resLog="$resDir/fioL-$idtSuffix.log.$nName"
+	fio --output $resLog --client $node $issue 2>&1 >/dev/null &
+
+	fioClients="$fioClients $!"
+    done
+
+    [ X"$fioPressNode" !=X ] && sleep 5
+    pr_debug "out func fServerSubmit"
 }
 
 function dofioInit(){
@@ -30,6 +66,10 @@ function dofioInit(){
 
     commInit
     cmdChkInstall fio
+
+    echo "fio Servers to use are:$fioPressNodes"
+
+    fServerStart
 }
 
 function dorfio(){
@@ -42,6 +82,7 @@ function dorfio(){
     mkIssuesList $objSize $testOps $tCfgDir
 
     dofioIssues $finIssues
+    fServerStop
 }
 
 function dofiosubmit() {
@@ -66,6 +107,7 @@ function dofiosubmit() {
     resLog="$resDir/fioL-$idtSuffix.log"
     [ $verbose -ge 1 ] && echo "resLogfile: $resLog"
 
+    fServerSubmit $issue
     fio $issue --output $resLog
 
     echo
