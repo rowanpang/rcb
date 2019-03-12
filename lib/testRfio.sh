@@ -105,7 +105,7 @@ function fServerSubmit(){
 	    nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
 	fi
 
-	resLog="$resDir/fioL-$idtSuffix.log.$nName"
+	resfile="$resDir/fioL-$idtSuffix.log.$nName"
 
 	issueNew="$dir/s$i-$name"
 	fServerMkIssue $issue $issueNew $i
@@ -115,7 +115,7 @@ function fServerSubmit(){
 	    [ $verbose -ge 1 ] && echo -e "\t--fServerSubmit dryRun continue---"
 	    continue
 	fi
-	fio --output $resLog --client $node $issue 2>&1 >/dev/null &
+	fio --output $resfile --client $node $issue 2>&1 >/dev/null &
 	fioClients="$fioClients $!"
     done
 
@@ -166,10 +166,11 @@ function dofiosubmit() {
     fi
     mkdir $resDir
 
+    fServerSubmit $issue
+
     resLog="$resDir/fioL-$idtSuffix.log"
     [ $verbose -ge 1 ] && echo "resLogfile: $resLog"
 
-    fServerSubmit $issue
     fio $issue --output $resLog
 
     echo
