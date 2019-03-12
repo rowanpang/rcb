@@ -175,9 +175,9 @@ function dofiosubmit() {
     kill $fioClient 2>&1 >/dev/null
 
     echo
-    resTxt=`grep ': IOPS=' $resLog`
+    resTxt=`grep ': IOPS=' $resLog*`
     echo -e "\t$resTxt"
-    resTxt=`grep ' lat' -m 1 $resLog`
+    resTxt=`grep ' lat' -m 1 $resLog*`
     echo -e "\t$resTxt"
     echo
 }
