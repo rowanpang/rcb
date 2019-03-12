@@ -10,8 +10,8 @@ fioPressNodes="
     172.16.18.217
 "
 fioPressNodesIssueChange="
-	rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb3#pool=,pool-bcea376d9b7648df96cb4cf285e12e3A
-	rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb7
+    rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb3#pool=,pool-bcea376d9b7648df96cb4cf285e12e3A
+    rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb7
 "
 
 rfioSvrWorkDir="/tmp/rfioServer"
