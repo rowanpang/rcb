@@ -1,5 +1,30 @@
 #!/bin/bash
 
+verbose="7"
+function pr_info(){
+    [ $verbose -ge 2 ] && echo "$@"
+}
+
+function pr_debug(){
+    [ $verbose -ge 1 ] && echo "$@"
+}
+
+function pr_warn(){
+    #33m,yellow
+    echo -e "\033[1;33m" WARNING! "$@" "\033[0m"
+}
+
+function pr_err(){
+    #31m,red
+    echo -e "\033[1;31m" ERROR! "$@",exit -1 "\033[0m"
+    exit -1
+}
+
+function pr_hint(){
+    #31m,red
+    echo -e "\033[1;31m" "$@" "\033[0m"
+}
+
 nodeinfos=""
 nodeinfoFile='./nodeinfo.log'
 
@@ -114,27 +139,6 @@ function sshChk() {
     [ $verbose -ge 1 ] && echo "---out func sshChk---"
 }
 
-function commInit() {
-    monVer=$verbose
-    command -v sshpass >/dev/null 2>&1
-    if ! [ $? ];then
-	echo "yum install dep: sshpass"
-	yum install sshpass
-    fi
-    command -v fio >/dev/null 2>&1
-    if ! [ $? ];then
-	echo "yum install dep: fio"
-	yum install fio
-    fi
-
-    for np in $nodesPwds;do
-	n=${np%,*}
-	nodes="$nodes $n"
-    done
-
-    sshChk $nodes
-}
-
 function mkIssuesList() {
     sizes="$1"
     ops="$2"
@@ -163,3 +167,33 @@ function mkIssuesList() {
     "
 }
 
+function cmdChkInstall(){
+    cmd=$1
+    pkg=$cmd
+    [ $# -ge 2 ] && pkg=$2
+
+    pr_debug "do cmdChkInstall for $cmd, pkg:$pkg"
+
+    command -v $cmd >/dev/null 2>&1
+
+    if ! [ $? ];then
+	pr_hint "cmd $cmd not found,do yum install $pkg"
+	yum --assumeyes install  $pkg
+    fi
+}
+
+function commInit() {
+    monVer=$verbose
+
+    cmdChkInstall sshpass
+    cmdChkInstall fio
+
+    for np in $nodesPwds;do
+	n=${np%,*}
+	nodes="$nodes $n"
+    done
+
+    sshChk $nodes
+}
+
+[ X$0 == Xcomm.sh ] && commInit

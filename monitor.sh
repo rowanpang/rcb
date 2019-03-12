@@ -10,6 +10,21 @@ function usage () {
     exit 0
 }
 
+function cmdChkInstall(){
+    cmd=$1
+    pkg=$cmd
+    [ $# -ge 2 ] && pkg=$2
+
+    [ $verbose -ge 1 ] && echo "do cmdChkInstall for $cmd, pkg:$pkg"
+
+    command -v $cmd >/dev/null 2>&1
+
+    if ! [ $? ];then
+	[ $verbose -ge 1 ] && echo "cmd $cmd not found,do yum install $pkg"
+	yum --assumeyes install  $pkg
+    fi
+}
+
 function optParser(){
     while getopts ":hd:v:" opt;do
         case $opt in
@@ -37,8 +52,13 @@ function optParser(){
 }
 
 function depCheck(){
-    command -v dstat >/dev/null 2>&1 || yum --assumeyes install dstat
-    command -v pidstat >/dev/null 2>&1 || yum --assumeyes install sysstat
+    [ $verbose -ge 1 ] && echo 'in func depCheck'
+    cmdChkInstall dstat
+    cmdChkInstall pidstat sysstat
+    cmdChkInstall lshw
+    cmdChkInstall lsscsi
+    cmdChkInstall ip iproute
+    [ $verbose -ge 1 ] && echo 'out func depCheck'
 }
 
 function doMon(){
@@ -69,8 +89,16 @@ function doMon(){
     pidstat -l -t -d -u -C "fio|tgtd|icfs|ceph-osd|radosgw" 1 > $dirName/pidstat.log &
     pids="$pids $!"
 
-    #top
-    top -d 1 -b -i -c -w > $dirName/top.log &
+:<<EOF
+    top:
+	-d: interval
+	-b: batch mode
+	-i: skip idle process
+	-c: command show
+	-w: wild show	#confilict with -o
+	-o: sort by
+EOF
+    top -d 1 -b -i -c -o RES > $dirName/top.log &
     pids="$pids $!"
 
     #dstat
@@ -114,11 +142,25 @@ function checkKill() {
     fi
 }
 
+function gatherInfo(){
+    lsscsi > $dirName/lsscsi.log
+    df -h > $dirName/df.log
+
+    cat /etc/os-release > $dirName/osInfo.log
+    echo >> $dirName/osInfo.log
+    uname -a >> $dirName/osInfo.log
+
+    lshw > $dirName/lshw.log
+
+    ip a > $dirName/ipA.log
+}
+
 function main(){
     optParser $@
     checkKill
     doInit
     depCheck
+    gatherInfo
     doMon
 }
 
