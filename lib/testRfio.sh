@@ -4,7 +4,7 @@ fioTestOps="rand-write,seq-write,rand-read,seq-read,rand-rw,seq-rw"
 fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
-fioClient=""
+fioClients=""
 fioPressNodes="
     172.16.18.219
     172.16.18.217
@@ -53,8 +53,6 @@ function fServerStop(){
 	return
     fi
 
-    echo "kill fio client : $fioClient"
-    kill $fioClient >/dev/null 2>&1
     for node in $fioPressNodes;do
 	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && rfioPid=\$(cat $rfioSvrPidfileName) && kill \$rfioPid >/dev/null 2>&1"
 	sshpass -p $(gotNodePwd $node) ssh $node "rm -rf $rfioSvrWorkDir"
@@ -96,6 +94,7 @@ function fServerSubmit(){
     i=1
     dir=`dirname $issue`
     name=`basename $issue`
+    fioClients=""
 
     for node in $fioPressNodes;do
 	if ! [ -z $dryRun ];then
@@ -115,11 +114,27 @@ function fServerSubmit(){
 	    continue
 	fi
 	fio --output $resfile --client $node $issueNew >/dev/null 2>&1 &
-	fioClient="$!"
+	fioClients="$fioClients $!"
     done
 
-    [ X"$fioPressNodes" != X ] && sleep 5
     pr_debug "out func fServerSubmit"
+}
+
+function fServerWkChk() {
+    while [ "TRUE" ];do
+	toChk=""
+
+	for cli in $fioClients;do
+	    ps $cli
+	    [  $? ] && toChk="$toChk $cli"
+	done
+
+	[ X$toChk == X ] && break
+
+	pr_warn "fio Clients $toChk still running,wait"
+	fioClients=$toChk
+	sleep 1
+    done
 }
 
 function dofioInit(){
@@ -169,14 +184,14 @@ function dofiosubmit() {
 
     resLog="$resDir/fioL-$idtSuffix.log"
     [ $verbose -ge 1 ] && echo "resLogfile: $resLog"
-
     fio $issue --output $resLog
-    kill $fioClient >/dev/null 2>&1
+
+    fServerWkChk
 
     echo
     resTxt=`grep ': IOPS=' $resLog*`
     echo -e "\t$resTxt"
-    resTxt=`grep ' lat' -m 1 $resLog*`
+    resTxt=`grep ' lat ' -m 1 $resLog*`
     echo -e "\t$resTxt"
     echo
 }
@@ -186,8 +201,7 @@ function dofioIssues() {
     preMon
     for issue in $issues ;do
 	if ! [ -s $issue ];then
-	    echo "test $issue file not exist skip "
-            sleep 3
+	    pr_warn "test $issue file not exist skip "
             continue
 	fi
 
