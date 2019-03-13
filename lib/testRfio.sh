@@ -31,6 +31,7 @@ function fServerStart(){
     [ X$multiRfio == X ] && return
 
     pr_debug "in func fServerStart"
+    echo "fio Servers to use are:$fioPressNodes"
     if ! [ -z $dryRun ];then
 	[ $verbose -ge 1 ] && echo -e "\t--fServerStart dryRun return---"
 	return
@@ -149,7 +150,6 @@ function dofioInit(){
     commInit
     cmdChkInstall fio
 
-    echo "fio Servers to use are:$fioPressNodes"
 
     fServerStart
 }
