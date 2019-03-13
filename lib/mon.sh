@@ -17,7 +17,12 @@ function preMon(){
     for node in $nodesToMon;do
 	[ $verbose -ge 1 ] && echo "do preMon for node:$node"
 	workDir=`sshpass -p $(gotNodePwd $node) ssh $node mktemp -d '/tmp/rMonTmp.XXXXXXXX'`
-	case $? in
+	ret=$?
+	if ! [ $ret ];then
+	    echo -n "preMon for $node,"
+	fi
+
+	case $ret in
 	    0)
 		;;
 	    5)
