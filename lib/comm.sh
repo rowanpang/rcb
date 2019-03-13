@@ -116,7 +116,7 @@ function gotIdentify(){
 
 function sshChk() {
     [ $verbose -ge 1 ] && echo "---in func sshChk---"
-    toChk=$1
+    toChk=$@
 
     if ! [ -z $dryRun ];then
 	echo "sshChk dryRun return"
