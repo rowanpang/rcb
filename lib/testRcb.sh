@@ -305,7 +305,7 @@ function docbMkIssueXml(){
 
 	src=`ls $dir/$tmpPrefix-$op* 2>/dev/null`
 	if ! [ -s $src ];then
-	    [ $verbose -ge 1 ] && echo "tmplate $src not exist,skip"
+	    pr_warn "template $src not exist,skip"
 	    continue
 	fi
 
