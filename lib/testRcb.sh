@@ -89,6 +89,7 @@ function docbcsvParser(){
 	opType=`echo $line | awk 'BEGIN {FS=","} { print $3}'`
 	res=`echo $line | awk 'BEGIN {FS=","} { print $6}'`
 	iops=`echo $line | awk 'BEGIN {FS=","} { print $14}'`
+	bw=`echo $line | awk 'BEGIN {FS=","} { print $15}'`
 	stage="$stage($opName)"
 
 
@@ -107,11 +108,12 @@ function docbcsvParser(){
 	if [ X$stage == X$lstage ];then
 	    ((i++));
 	    iopsSum=`echo "scale=2;$iopsSum+$iops" | bc`
+	    bwSum=`echo "scale=2;$bwSum+$bw" | bc`
 	    resSum=`echo "scale=2;$resSum+$res" | bc`
 	else
 	    if [ X$lstage != X ];then
 		resAvg=`echo "scale=2;$resSum/$i"| bc`
-		echo -e "\tstage-iops-res: $lstage\t $iopsSum\t $resAvg"
+		echo -e "\tstage-iops-res: $lstage\t $iopsSum\t $bwSum\t $resAvg"
 		[ $verbose -ge 1 ] && echo "  new Stage: $stage "
 		if [ X$postCont != X ];then
 		    i=0
@@ -123,15 +125,16 @@ function docbcsvParser(){
 	    fi
 	    i=1
 	    iopsSum=$iops
+	    bwSum=$bw
 	    resSum=$res
 	    lstage=$stage
 	fi
-	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum resSum:$resSum"
+	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum bwSum:$bwSum resSum:$resSum"
     done < $csvFile
 
     if [ $i -ge 1 ];then
 	resAvg=`echo "scale=2;$resSum/$i"| bc`
-	echo -e "stage-iops-res: $lstage\t $iopsSum\t $resAvg"
+	echo -e "\tstage-iops-res: $lstage\t $iopsSum\t $bwSum\t $resAvg"
     fi
 }
 
