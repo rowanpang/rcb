@@ -7,6 +7,7 @@ cbTdir="./cbTest"
 cbdir="/root/cosbench/0.4.2.c4"
 
 function docbOnCtrlC(){
+    verbose=7
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
     if [ X$wkid != X ];then
@@ -176,7 +177,8 @@ function docbWkldChk() {
 }
 
 function docbCancel(){
-    wkid=$1
+    pr_debug "in func docbCancel wkid: $wkid"
+
     $cbcli cancel $wkid
 }
 
