@@ -156,7 +156,8 @@ function mkIssuesList() {
 	for op in $ops ;do
 	    sizes="${sizes//,/ }"
 	    for s in $sizes;do
-		issuesNew="$issuesNew `ls $dir/$s-$op* 2>/dev/null`"
+		ret=`ls $dir/$s-$op* 2>/dev/null`
+		[ $ret ] && issuesNew="$issuesNew $ret" || issuesNew="$issuesNew $dir/$s-$op"
 	    done
 	done
 	finIssues=$issuesNew
