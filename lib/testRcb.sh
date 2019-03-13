@@ -303,7 +303,7 @@ function docbMkIssueXml(){
 
 	[ $verbose -ge 1 ] && echo "docbMkIssueXml for $toMk,name(op): $name($op)"
 
-	src=$dir/$tmpPrefix-$op.xml
+	src=`ls $dir/$tmpPrefix-$op* 2>/dev/null`
 	if ! [ -s $src ];then
 	    [ $verbose -ge 1 ] && echo "tmplate $src not exist,skip"
 	    continue
