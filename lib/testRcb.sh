@@ -10,6 +10,9 @@ function docbOnCtrlC(){
     verbose=7
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
+    echo -e "\e[0m"
+    echo -e '\e[?25h'
+
     if [ X$wkid != X ];then
         docbCancel
     fi
