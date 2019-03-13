@@ -18,7 +18,8 @@ function usage () {
 	-f	    dropCache	    [$freeMem]
 
 	-t	    test dir	    [$tCfgDir]
-	-s size     objSize	    [$objSize,or size1,size2,..]
+	-s size     objSize	    [$objSize OR s1,s2,..]
+	-o testOps  ops to test	    [$testOps OR op1,op2,..]
 
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
@@ -29,7 +30,7 @@ function usage () {
 }
 
 function optParser() {
-    while getopts ":hdct:s:v:p:n:m" opt;do
+    while getopts ":hdct:s:o:v:p:n:m" opt;do
 	case $opt in
 	    h)
 		usage
@@ -42,6 +43,9 @@ function optParser() {
 		;;
 	    s)
 		objSize="$OPTARG"
+		;;
+	    o)
+		testOps="$OPTARG"
 		;;
 	    f)
 		freeMem="True"
