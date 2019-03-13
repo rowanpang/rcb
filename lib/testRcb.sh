@@ -26,6 +26,10 @@ function docbInit() {
     fi
 
     cbcli="$cbdir/cli.sh"
+    if ! [ -s $cbcli ];then
+	echo "$cbcli not exist,exit 1"
+	exit 1
+    fi
 
     commInit
 }
