@@ -10,6 +10,7 @@ SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
 
 function usage () {
+    mpress=`echo $fioPressNodes | tr '\n' ' '`
     echo "Usage :  $0 [options] [optIssues]
 	Options:
 	-h	    Display this message
@@ -22,12 +23,13 @@ function usage () {
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
 	-n nodeinfoFile	    nodeinfo file name [$nodeinfoFile]
+	-m	    multi fio server [ $mpress ]
     "
     exit 0
 }
 
 function optParser() {
-    while getopts ":hdct:s:v:p:n:" opt;do
+    while getopts ":hdct:s:v:p:n:m" opt;do
 	case $opt in
 	    h)
 		usage
@@ -49,6 +51,10 @@ function optParser() {
 		;;
 	    p)
 		cbdir="$OPTARG"
+		;;
+	    m)
+		multiRfio="True"
+		nodesToMonPwds="$nodesToMonPwds $fioPressNodesPwds"
 		;;
 	    n)
 		nodeinfoFile="$OPTARG"
@@ -109,8 +115,9 @@ nodesToMonPwds="
     must contain in then nodesToMonPwds
     ref ./lib/testRfio.sh for usage
 EOF
-fioPressNodes=" "
-fioPressNodesIssueChange=" "
+fioPressNodes=""
+fioPressNodesPwds=""
+fioPressNodesIssueChange=""
 
 finIssues=""
 dryRun=""

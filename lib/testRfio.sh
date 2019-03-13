@@ -28,6 +28,8 @@ function dofioOnCtrlC(){
 }
 
 function fServerStart(){
+    [ X$multiRfio == X ] && return
+
     pr_debug "in func fServerStart"
     if ! [ -z $dryRun ];then
 	[ $verbose -ge 1 ] && echo -e "\t--fServerStart dryRun return---"
@@ -46,6 +48,7 @@ function fServerStart(){
 }
 
 function fServerStop(){
+    [ X$multiRfio == X ] && return
     pr_debug "in func fServerStop"
 
     if ! [ -z $dryRun ];then
@@ -62,6 +65,7 @@ function fServerStop(){
 }
 
 function fServerMkIssue(){
+    [ X$multiRfio == X ] && return
     pr_debug "in func fServerMkIssue"
     src=$1
     dst=$2
@@ -88,6 +92,7 @@ function fServerMkIssue(){
 }
 
 function fServerSubmit(){
+    [ X$multiRfio == X ] && return
     pr_debug "in func fServerSubmit"
 
     issue=$1
@@ -121,6 +126,7 @@ function fServerSubmit(){
 }
 
 function fServerWkChk() {
+    [ X$multiRfio == X ] && return
     while [ "TRUE" ];do
 	toChk=""
 

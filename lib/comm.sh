@@ -187,7 +187,7 @@ function commInit() {
 
     cmdChkInstall sshpass
 
-    for np in $nodesToMonPwds;do
+    for np in $nodesToMonPwds ;do
 	n=${np%,*}
 	nodesToMon="$nodesToMon $n"
     done
