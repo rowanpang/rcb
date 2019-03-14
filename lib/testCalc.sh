@@ -4,6 +4,7 @@ calcDir="./"
 calcTgtType="rcb/rfio"
 
 function doCalcOpts(){
+    objSize=""
     tCfgDir=$calcDir
     testOps=$calcTgtType
 
@@ -26,6 +27,8 @@ function doCalcOpts(){
 	    exit -1
 	    ;;
     esac
+
+    [ X$objSize != X ] && sizes=$objSize
 }
 
 function doCalcInit() {
