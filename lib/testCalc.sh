@@ -3,12 +3,11 @@
 calcDir="./"
 calcTgt="rcb/rfio"
 
-function doCalcInit() {
+function doCalcOpts(){
     tCfgDir=$calcDir
     testOps=$calcTgt
 
     optParser $@
-    commInit
 
     tgtDir=$tCfgDir
     calcTgt=$testOps
@@ -27,7 +26,12 @@ function doCalcInit() {
 	    exit -1
 	    ;;
     esac
+}
 
+function doCalcInit() {
+    doCalcOpts $@
+
+    commInit
     initHostName
 }
 
