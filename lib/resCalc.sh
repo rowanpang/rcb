@@ -6,12 +6,11 @@ strHosts="node1,node2,node3"
 cliHosts="press2,press3,as13kp9"
 objSizes="4k,16k,256k,1m"
 
-syslevelcsv="$calcTgtDir/levelResult.csv"
-syslevelcsvHeader="idt-cpu-disk-netRx-netTx"
-syslevelcsvHeaderHost="nodeX$syslevelcsvHeader-pressX${syslevelcsvHeader#*-}"
-
-
 function csvInit(){
+    syslevelcsv="$calcTgtDir/levelResult.csv"
+    syslevelcsvHeader="idt-cpu-disk-netRx-netTx"
+    syslevelcsvHeaderHost="nodeX$syslevelcsvHeader-pressX${syslevelcsvHeader#*-}"
+
     if ! [ -s $syslevelcsv ];then
 	pr_hint "[init] res csv file $syslevelcsv"
 	echo "${syslevelcsvHeaderHost//-/,}" > $syslevelcsv
