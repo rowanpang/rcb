@@ -2,6 +2,7 @@
 
 source ./lib/comm.sh
 source ./lib/mon.sh
+source ./lib/resCalc.sh
 source ./lib/testRcb.sh
 source ./lib/testRfio.sh
 source ./lib/testClean.sh

@@ -9,6 +9,8 @@ cbdir="/root/cosbench/0.4.2.c4"
 rcbResCSV="./rcbResult.csv"
 rcbcsvHeader="stage-iops-bw-lat"
 
+cbResDirPfx="cbRes-"
+
 function rcbcsvInit(){
     if ! [ -s $rcbResCSV ];then
 	pr_hint "--use fio result $rcbResCSV"
@@ -230,7 +232,7 @@ function docbsubmit(){
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
 
-    resDir="cbRes-$wkid-$idtSuffix"
+    resDir="$cbResDirPfx$wkid-$idtSuffix"
     if [ -d $resDir ];then
 	echo "$resDir duplicate, mv to date +%s format"
 	mv $resDir $resDir-`date +%s`
@@ -360,6 +362,8 @@ function dorcb() {
     mkIssuesList $objSize $testOps $tCfgDir
     docbMkIssueXml $finIssues
     docbIssues $finIssues
+
+    doSysCalc $cbResDirPfx $strHostNames $pressHostNames $objSize
 }
 
 function testMain(){
