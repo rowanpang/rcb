@@ -64,7 +64,7 @@ function hostsAvg(){
 	hdir=`ls -d $parentDir/$h-* 2>/dev/null`
 	pr_devErr "--hostdir $hdir"
 	cpu=`cat $hdir/cpu.log | awk 'BEGIN{ i=0 } {sum+=$9;i++} END {print 100-sum/i}'`
-	disk=`cat $hdir/disk.log.extra | awk 'BEGIN{ i=0 } {sum+=$14;i++} END {sum+=i;print  sum/i}'`
+	disk=`cat $hdir/disk.log.extra | awk 'BEGIN{ i=1 } {if($14>15){sum+=$14;i++}} END {sum+=i;print  sum/i}'`
 	netRx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $1}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 	netTx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $2}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 
@@ -104,7 +104,6 @@ function resDirslevel(){
 	dir=`ls -d $calcTgtDir/$resDirPfx$s-* 2>/dev/null`
 	folds="$folds $dir"
     done
-    cd - /dev/null 2>&1
 
     for dir in $folds;do
 	pr_debug "---calc for $dir----"
