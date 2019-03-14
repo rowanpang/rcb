@@ -146,6 +146,9 @@ function sshChk() {
     [ $verbose -ge 1 ] && echo "---out func sshChk---"
 }
 
+
+#mklist depend on op,size  final
+#s1-op1,s2-op1,sX-op1,s1-op2,sX-op2
 function mkIssuesList() {
     sizes="$1"
     ops="$2"
