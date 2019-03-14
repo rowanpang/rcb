@@ -9,7 +9,6 @@ function doCalcInit() {
 
     optParser $@
     commInit
-    initHostName
 
     tgtDir=$tCfgDir
     calcTgt=$testOps
@@ -28,6 +27,8 @@ function doCalcInit() {
 	    exit -1
 	    ;;
     esac
+
+    initHostName
 }
 
 function doCalcCmd(){
