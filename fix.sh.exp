@@ -1,0 +1,14 @@
+#!/bin/bash
+
+files="cbTest/4k-*"
+
+accKey=7GE498XNIDUBKAYAP9LU
+secKey=5mVdIGjwdgYm4uB0sXRmCImC66MVqaEfwU618o3f
+
+gw1="172.16.18.20:7480"
+gw2="172.16.18.21:7480"
+gw3="172.16.18.22:7480"
+
+sed -i "s#accesskey=.*;secret#accesskey=$accKey;secret#" 					$files
+sed -i "s#secretkey=.*;end#secretkey=$secKey;end#" 						$files
+sed -i "s#192.168.11.1:8080#$gw1#; s#192.168.11.2:8080#$gw2#; s#192.168.11.3:8080#$gw3#" 	$files
