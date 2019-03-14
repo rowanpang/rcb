@@ -325,8 +325,14 @@ function docbMkIssueXml(){
 
 	dir=`dirname $toMk`
 	name=`basename $toMk`
-	size=${name%-*}
-	if [ X$tmpPrefix == X$size ];then
+	pfx=${name%-*}
+
+	pfxTmp=$(echo $pfx | sed 's/[[:digit:]]\S\+$//')
+	size=$(echo $pfx | sed 's/^[[:alpha:]]\+//')
+
+	[ X$pfxTmp != X ] && tmpPrefix=${pfxTmp}4k
+
+	if [ X$tmpPrefix == X$pfx ];then
 	    continue
 	    [ $verbose -ge 1] && echo "tmpxml self,skip"
 	fi
