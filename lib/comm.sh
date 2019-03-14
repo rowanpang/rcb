@@ -162,8 +162,8 @@ function mkIssuesList() {
 	done
 	finIssues=$issuesNew
     fi
-
-    echo "finally issues:
+    nums=`echo $finIssues | wc -w`
+    echo "finally issues($nums):
 	$finIssues
     "
 }
