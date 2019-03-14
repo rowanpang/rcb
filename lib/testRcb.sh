@@ -53,6 +53,8 @@ function docbOnCtrlC(){
 function docbInit() {
     trap 'docbOnCtrlC' INT
 
+    mkIssuesList $objSize $testOps $tCfgDir
+    docbMkIssueXml $finIssues
     if ! [ -d $cbdir ];then
 	echo "$cbdir not exist,exit 1"
 	exit 1
@@ -346,7 +348,7 @@ function docbMkIssueXml(){
 	[ $verbose -ge 1 ] && echo "docbMkIssueXml for $toMk,name(op): $name($op)"
 
 	src=`ls $dir/$tmpPrefix-$op* 2>/dev/null`
-	if ! [ -s $src ];then
+	if [ X$src == X ];then
 	    pr_warn "template $src not exist,skip"
 	    continue
 	fi
@@ -364,8 +366,6 @@ function dorcb() {
     optParser $@
 
     docbInit $@
-    mkIssuesList $objSize $testOps $tCfgDir
-    docbMkIssueXml $finIssues
     docbIssues $finIssues
 
     #hostname add a ' ' for empty host'
