@@ -100,10 +100,12 @@ function hostlevel(){
 
 function resDirslevel(){
     folds=""
+    cd $calcTgtDir >/dev/null 2>&1
     for s in ${objSizes//,/ };do
-	dir=`ls -d $calcTgtDir/$resDirPfx$s-* 2>/dev/null`
+	dir= $calcTgtDir/`ls -d "$resDirPfx$s-*" 2>/dev/null`
 	folds="$folds $dir"
     done
+    cd - /dev/null 2>&1
 
     for dir in $folds;do
 	pr_debug "---calc for $dir----"
