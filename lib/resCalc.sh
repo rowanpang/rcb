@@ -125,4 +125,4 @@ function testMain(){
     resDirslevel
 }
 
-[ X`basename $0` == Xcalc.sh ] && testMain
+[ X`basename $0` == XresCalc.sh ] && testMain
