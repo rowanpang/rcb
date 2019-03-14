@@ -4,6 +4,7 @@ fioTestOps="rand-write,seq-write,rand-read,seq-read,rand-rw,seq-rw"
 fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
+
 fioClients=""
 fioPressNodes="
     172.16.18.219
@@ -228,6 +229,7 @@ function testMain(){
     source ./lib/comm.sh
     verbose=7
     dryRun="yes"
+    multiRfio="yes"
     fServerStart
     fServerSubmit ./fioT-rbd/4k-rand-rw
     sleep 50

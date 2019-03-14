@@ -6,6 +6,28 @@ cbTdir="./cbTest"
 
 cbdir="/root/cosbench/0.4.2.c4"
 
+rcbResCSV="./rcbResult.csv"
+rcbcsvHeader="stage-iops-bw-lat"
+
+function rcbcsvInit(){
+    if ! [ -s $rcbResCSV ];then
+	pr_hint "--use fio result $rcbResCSV"
+	echo "${rcbcsvHeader//-/,}" > $rcbResCSV
+    fi
+}
+
+function rcbcsvAppend(){
+    line=$@
+
+    echo -en "\t$rcbcsvHeader: "
+    for res in $line;do
+	echo -en "$res\t"
+    done
+    echo
+
+    echo ${line// /,} >> $rcbResCSV
+}
+
 function docbOnCtrlC(){
     verbose=7
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
@@ -36,6 +58,7 @@ function docbInit() {
     fi
 
     commInit
+    rcbcsvInit
 }
 
 function lineadj(){
@@ -98,10 +121,12 @@ function docbcsvParser(){
 	if ! [ X$opType == Xread -o X$opType == Xwrite ] ;then
 	    [ $verbose -ge 3 ] && echo -n "not read/write, skip? "
 	    if [ $i -eq 0 ];then
+		# i==0, not int calc stage,skip it
 		[ $verbose -ge 3 ] && echo 'yes'
 		continue
 	    fi
 	    postCont="True"
+	    # i!=0, int calc stage,need do lat resAvg
 	    [ $verbose -ge 3 ] && echo 'no,need do resAvg .eg'
 	fi
 
@@ -111,10 +136,14 @@ function docbcsvParser(){
 	    bwSum=`echo "scale=2;$bwSum+$bw" | bc`
 	    resSum=`echo "scale=2;$resSum+$res" | bc`
 	else
+	    #$lstage != NULL, and $statge != $lstage indicate
+	    #lstage finished, do final calc,exp resAvg
 	    if [ X$lstage != X ];then
 		resAvg=`echo "scale=2;$resSum/$i"| bc`
-		echo -e "\tstage-iops-res: $lstage\t $iopsSum\t $bwSum\t $resAvg"
+		rcbcsvAppend $lstage $iopsSum $bwSum $resAvg
 		[ $verbose -ge 1 ] && echo "  new Stage: $stage "
+
+		#if in postCont,indicate not read/write stage, just next line continue
 		if [ X$postCont != X ];then
 		    i=0
 		    postCont=""
@@ -123,6 +152,8 @@ function docbcsvParser(){
 	    else
 		[ $verbose -ge 1 ] && echo "first Stage: $stage "
 	    fi
+
+	    #new stage,init sum
 	    i=1
 	    iopsSum=$iops
 	    bwSum=$bw
@@ -132,9 +163,10 @@ function docbcsvParser(){
 	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum bwSum:$bwSum resSum:$resSum"
     done < $csvFile
 
+    #file finished by read/write type stage. need do calc
     if [ $i -ge 1 ];then
 	resAvg=`echo "scale=2;$resSum/$i"| bc`
-	echo -e "\tstage-iops-res: $lstage\t $iopsSum\t $bwSum\t $resAvg"
+	rcbcsvAppend $lstage $iopsSum $bwSum $resAvg
     fi
 }
 
@@ -329,3 +361,12 @@ function dorcb() {
     docbMkIssueXml $finIssues
     docbIssues $finIssues
 }
+
+function testMain(){
+    source ./lib/comm.sh
+    rcbcsvInit
+    rcbcsvAppend 5 4 3 2
+    rcbcsvAppend 5 4 3 2  1
+}
+
+[ X`basename $0` == XtestRcb.sh ] && testMain
