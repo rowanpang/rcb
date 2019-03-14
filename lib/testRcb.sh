@@ -14,10 +14,10 @@ cbResCalcPfx="cbRes-w*-"
 
 function rcbcsvInit(){
     if ! [ -s $rcbResCSV ];then
-	pr_hint "[init] cb result csv $rcbResCSV"
+	pr_hint "[init] cb result csv: $rcbResCSV"
 	echo "${rcbcsvHeader//-/,}" > $rcbResCSV
     else
-	pr_hint "[appent] to cb result csv $rcbResCSV"
+	pr_hint "[appent] to cb result csv: $rcbResCSV"
 	echo "${rcbcsvHeader//-/,}" >> $rcbResCSV
 	echo "${rcbcsvHeader//-/,}" >> $rcbResCSV
     fi
