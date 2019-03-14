@@ -112,7 +112,7 @@ function docbcsvParser(){
 	opType=`echo $line | awk 'BEGIN {FS=","} { print $3}'`
 	res=`echo $line | awk 'BEGIN {FS=","} { print $6}'`
 	iops=`echo $line | awk 'BEGIN {FS=","} { print $14}'`
-	bw=`echo $line | awk 'BEGIN {FS=","} { print $15}'`
+	bw=`echo $line | awk 'BEGIN {FS=","} { print $15/1024/1024}'`
 	stage="$stage($opName)"
 
 
