@@ -13,15 +13,17 @@ syslevelcsvHeaderHost="nodeX$syslevelcsvHeader-pressX${syslevelcsvHeader#*-}"
 
 function csvInit(){
     if ! [ -s $syslevelcsv ];then
+	pr_hint "[init] res csv file $syslevelcsv"
 	echo "${syslevelcsvHeaderHost//-/,}" > $syslevelcsv
 	echo "${syslevelcsvHeader//-/,}" >> $syslevelcsv
     else
+	pr_hint "[append] to res csv file $syslevelcsv"
 	echo "${syslevelcsvHeader//-/,}" >> $syslevelcsv
 	echo "${syslevelcsvHeader//-/,}" >> $syslevelcsv
     fi
 }
 
-function csvAppent(){
+function csvAppend(){
     line=$@
 
     echo -en "\t$syslevelcsvHeader: "
@@ -38,7 +40,7 @@ function hostIdentify(){
     hosts=$2
     h=${hosts%%,*}
 
-    hdir=`ls -d $parentDir/$h-*`
+    hdir=`ls -d $parentDir/$h-* 2>/dev/null`
 
     pr_devErr "idt Host dir:$hdir"
 
@@ -60,7 +62,7 @@ function hostsAvg(){
 
     for h in ${hosts//,/ };do
 	((i++))
-	hdir=`ls -d $parentDir/$h-*`
+	hdir=`ls -d $parentDir/$h-* 2>/dev/null`
 	pr_devErr "--hostdir $hdir"
 	cpu=`cat $hdir/cpu.log | awk 'BEGIN{ i=0 } {sum+=$9;i++} END {print 100-sum/i}'`
 	disk=`cat $hdir/disk.log.extra | awk 'BEGIN{ i=0 } {sum+=$14;i++} END {sum+=i;print  sum/i}'`
@@ -94,13 +96,13 @@ function hostlevel(){
     strAvg=`hostsAvg $pdir $strHosts`
     cliAvg=`hostsAvg $pdir $cliHosts`
 
-    csvAppent $idt,$strAvg,$cliAvg
+    csvAppend $idt,$strAvg,$cliAvg
 }
 
 function resDirslevel(){
     folds=""
     for s in ${objSizes//,/ };do
-	dir=`ls -d $tgtDir/$resDirPfx$s-*`
+	dir=`ls -d $tgtDir/$resDirPfx$s-* 2>/dev/null`
 	folds="$folds $dir"
     done
 
