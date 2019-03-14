@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tgtDir="./"
+calcTgtDir="./"
 resDirPfx="cbRes-"
 strHosts="node1,node2,node3"
 cliHosts="press2,press3,as13kp9"
@@ -102,7 +102,7 @@ function hostlevel(){
 function resDirslevel(){
     folds=""
     for s in ${objSizes//,/ };do
-	dir=`ls -d $tgtDir/$resDirPfx$s-* 2>/dev/null`
+	dir=`ls -d $calcTgtDir/$resDirPfx$s-* 2>/dev/null`
 	folds="$folds $dir"
     done
 
@@ -117,6 +117,8 @@ function doSysCalc(){
     strHosts=$2
     cliHosts=$3
     objSizes=$4
+
+    [ X$topdir != X ] && calcTgtDir=$topdir
 
     csvInit
     resDirslevel

@@ -1,18 +1,18 @@
 #!/bin/bash
 
 calcDir="./"
-calcTgt="rcb/rfio"
+calcTgtType="rcb/rfio"
 
 function doCalcOpts(){
     tCfgDir=$calcDir
-    testOps=$calcTgt
+    testOps=$calcTgtType
 
     optParser $@
 
-    tgtDir=$tCfgDir
-    calcTgt=$testOps
+    calcTgtDir=$tCfgDir
+    calcTgtType=$testOps
 
-    case $calcTgt in
+    case $calcTgtType in
 	rcb)
 	    pfx=$cbResCalcPfx
 	    sizes=$cbObjSize

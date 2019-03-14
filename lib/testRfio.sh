@@ -151,6 +151,7 @@ function dofioInit(){
     commInit
     cmdChkInstall fio
 
+    topdirInit "rfioTest"
 
     fServerStart
 }
@@ -180,7 +181,7 @@ function dofiosubmit() {
     #fio-rbd/fioT-4k-rw.txt
     dirName=`dirname $issue`
     devType=${dirName#*-}
-    resDir="fioR-$devType-${idtSuffix//-/_}-`date +%s`"
+    resDir="$topdir/fioR-$devType-${idtSuffix}"
     if [ -d $resDir ];then
         echo "$resDir duplicate, mv to date +%s format"
         mv $resDir $resDir-`date +%s`

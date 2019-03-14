@@ -227,6 +227,17 @@ function commInit() {
     sshChk $nodesToMon
 }
 
+function topdirInit() {
+    pfx=$1
+    topdir="$pfx-`date +%s`"
+    if [ -d $topdir ];then
+	topdirbk=$topdir-`date+%s`
+	echo "$topdir duplicate, mv to $topdirbk"
+	mv $topdir $topdirbk
+    fi
+    mkdir $topdir
+}
+
 function testMain(){
     verbose=7
     cfgFile="./conf.cfg.exp"
