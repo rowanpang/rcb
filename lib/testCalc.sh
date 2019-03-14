@@ -36,8 +36,7 @@ function doCalcInit() {
 }
 
 function doCalcCmd(){
-    pr_debug "in func doCalcCmd"
-
+    pr_hint "doCmd doCalcCmd"
     doCalcInit $@
     doSysCalc $pfx "$strHostNames " "$pressHostNames " $sizes
 
