@@ -349,7 +349,7 @@ function docbMkIssueXml(){
 
 	src=`ls $dir/$tmpPrefix-$op* 2>/dev/null`
 	if [ X$src == X ];then
-	    pr_warn "template $src not exist,skip"
+	    pr_warn "template $dir/$tmpPrefix-$op* not exist,skip"
 	    continue
 	fi
 
