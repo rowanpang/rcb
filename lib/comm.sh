@@ -190,6 +190,24 @@ function cmdChkInstall(){
     fi
 }
 
+function initHostName(){
+    pr_debug "in func initHostName"
+    for np in $strNodesPwds;do
+	node=${np%,*}
+	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
+	strHostNames="$strHostNames,$nName"
+    done
+    pr_debug "str:$strHostNames"
+
+    for np in $pressNodesPwds;do
+	node=${np%,*}
+	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
+	pressHostNames="$pressHostNames,$nName"
+    done
+    pr_debug press:$pressHostNames
+    pr_debug "out func initHostName"
+}
+
 function commInit() {
     monVer=$verbose
 
@@ -203,6 +221,14 @@ function commInit() {
     done
 
     sshChk $nodesToMon
+    initHostName
 }
 
-[ X$0 == Xcomm.sh ] && commInit
+function testMain(){
+    verbose=7
+    cfgFile="./conf.cfg.exp"
+    [ -s $cfgFile ] && source $cfgFile
+    commInit
+}
+
+[ X`basename $0` == Xcomm.sh ] && testMain
