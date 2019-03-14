@@ -230,7 +230,7 @@ function docbsubmit(){
     wkid=`echo $ret | awk '{print $4}'`
     sleep 1
 
-    resDir="cbRes-$idtSuffix-$wkid"
+    resDir="cbRes-$wkid-$idtSuffix"
     if [ -d $resDir ];then
 	echo "$resDir duplicate, mv to date +%s format"
 	mv $resDir $resDir-`date +%s`
