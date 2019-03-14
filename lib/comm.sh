@@ -225,7 +225,6 @@ function commInit() {
     done
 
     sshChk $nodesToMon
-    initHostName
 }
 
 function testMain(){
