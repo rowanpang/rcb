@@ -1,5 +1,6 @@
 #!/bin/bash
 
+tgtDir="./"
 resDirPfx="cbRes-"
 strHosts="node1,node2,node3"
 cliHosts="press2,press3,as13kp9"
@@ -99,7 +100,7 @@ function hostlevel(){
 function resDirslevel(){
     folds=""
     for s in ${objSizes//,/ };do
-	dir=`ls -d $resDirPfx$s-*`
+	dir=`ls -d $tgtDir/$resDirPfx$s-*`
 	folds="$folds $dir"
     done
 

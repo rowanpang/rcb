@@ -192,11 +192,13 @@ function cmdChkInstall(){
 
 function initHostName(){
     pr_debug "in func initHostName"
+
     for np in $strNodesPwds;do
 	node=${np%,*}
 	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
 	strHostNames="$strHostNames,$nName"
     done
+    strHostNames=${strHostNames#,}
     pr_debug "str:$strHostNames"
 
     for np in $pressNodesPwds;do
@@ -204,7 +206,9 @@ function initHostName(){
 	nName=`sshpass -p $(gotNodePwd $node) ssh $node hostname`
 	pressHostNames="$pressHostNames,$nName"
     done
+    pressHostNames=${pressHostNames#,}
     pr_debug press:$pressHostNames
+
     pr_debug "out func initHostName"
 }
 

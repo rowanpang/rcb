@@ -6,6 +6,7 @@ source ./lib/resCalc.sh
 source ./lib/testRcb.sh
 source ./lib/testRfio.sh
 source ./lib/testClean.sh
+source ./lib/testCalc.sh
 
 SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
@@ -18,9 +19,9 @@ function usage () {
 	-d	    dryRun
 	-f	    dropCache	    [$freeMem]
 
-	-t	    test dir	    [$tCfgDir]
+	-t	    target dir	    [$tCfgDir]
 	-s size     objSize	    [$objSize OR s1,s2,..]
-	-o testOps  ops to test	    [$testOps OR op1,op2,..]
+	-o testOps  ops to test	    [$testOps OR op1,op2,.. OR rcb/rfio]
 
 	-v num	    verbose level   [$verbose]
 	-p path	    cosbench path   [$cbdir]
@@ -83,12 +84,18 @@ function cmdChose() {
     case ${cmd%.*} in
         rcb)
 	    dorcb $@
+	    rmNodeinfofile
 	    ;;
 	rfio)
 	    dorfio $@
+	    rmNodeinfofile
 	    ;;
 	clean)
 	    testClean $@
+	    rmNodeinfofile
+	    ;;
+	calc)
+	    doCalcCmd $@
 	    ;;
 	*)
 	    echo "cmd error exit 1"
@@ -101,8 +108,6 @@ function main(){
     cfgFile="./conf.cfg"
     [ -s $cfgFile ] && source $cfgFile
     cmdChose $@
-
-    rmNodeinfofile
 }
 
 :<<EOF
