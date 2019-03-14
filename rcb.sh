@@ -10,7 +10,7 @@ SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
 
 function usage () {
-    mpress=`echo $fioPressNodes | tr '\n' ' '`
+    mpress=`echo $fServerNodes | tr '\n' ' '`
     echo "Usage :  $0 [options] [optIssues]
 	Options:
 	-h	    Display this message
@@ -58,7 +58,7 @@ function optParser() {
 		;;
 	    m)
 		multiRfio="True"
-		nodesToMonPwds="$nodesToMonPwds $fioPressNodesPwds"
+		pressNodesPwds="$pressNodesPwds $fServerNodesPwds"
 		;;
 	    n)
 		nodeinfoFile="$OPTARG"
@@ -110,8 +110,8 @@ function main(){
     192.168.100.101,IPS@jjfab2018
     192.168.100.102,IPS@jjfab2018
 EOF
-nodesToMon=""
-nodesToMonPwds="
+strNodesPwds=" "
+pressNodesPwds="
     127.0.0.1,IPS@jjfab2018
 "
 
@@ -120,9 +120,9 @@ nodesToMonPwds="
     must contain in then nodesToMonPwds
     ref ./lib/testRfio.sh for usage
 EOF
-fioPressNodes=""
-fioPressNodesPwds=""
-fioPressNodesIssueChange=""
+fServerNodes=""
+fServerNodesPwds=""
+fServerNodesIssueChange=""
 
 finIssues=""
 dryRun=""

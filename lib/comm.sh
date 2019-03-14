@@ -4,6 +4,9 @@ verbose="7"
 nodeinfos=""
 nodeinfoFile='./nodeinfo.log'
 
+nodesToMon=""
+nodesToMonPwds=""
+
 function pr_info(){
     [ $verbose -ge 2 ] && echo "$@"
 }
@@ -191,6 +194,8 @@ function commInit() {
     monVer=$verbose
 
     cmdChkInstall sshpass
+
+    nodesToMonPwds="$strNodesPwds $pressNodesPwds"
 
     for np in $nodesToMonPwds ;do
 	n=${np%,*}

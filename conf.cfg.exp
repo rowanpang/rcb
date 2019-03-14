@@ -5,7 +5,10 @@ cbdir='/path/to/cosbench/dir'
     192.168.100.101,IPS@jjfab2018
     192.168.100.102,IPS@jjfab2018
 EOF
-nodesToMonPwds="
+strNodesPwds="
+    192.168.100.100,IPS@jjfab2018
+"
+pressNodesPwds="
     127.0.0.1,IPS@jjfab2018
 "
 
