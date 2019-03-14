@@ -368,7 +368,8 @@ function dorcb() {
     docbMkIssueXml $finIssues
     docbIssues $finIssues
 
-    doSysCalc $cbResDirPfx $strHostNames $pressHostNames $objSize
+    #hostname add a ' ' for empty host'
+    doSysCalc $cbResCalcPfx "$strHostNames " "$pressHostNames " $objSize
 }
 
 function testMain(){
