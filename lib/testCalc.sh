@@ -14,7 +14,7 @@ function doCalcOpts(){
 
     case $calcTgt in
 	rcb)
-	    pfx=$cbResDirPfx
+	    pfx=$cbResCalcPfx
 	    sizes=$cbObjSize
 	    ;;
 	rfio)

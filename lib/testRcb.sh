@@ -10,6 +10,7 @@ rcbResCSV="./rcbResult.csv"
 rcbcsvHeader="stage-iops-bw-lat"
 
 cbResDirPfx="cbRes-"
+cbResCalcPfx="cbRes-w*-"
 
 function rcbcsvInit(){
     if ! [ -s $rcbResCSV ];then
