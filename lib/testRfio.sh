@@ -6,11 +6,11 @@ fioTdir="./fioT-rbd"
 
 
 fioClients=""
-fioPressNodes="
+fServerNodes="
     172.16.18.219
     172.16.18.217
 "
-fioPressNodesIssueChange="
+fServerNodesIssueChange="
     rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb3#pool=,pool-bcea376d9b7648df96cb4cf285e12e3A
     rbdname=,volume-22a42fb0e3414d869a5d5983d7d23cb7
 "
@@ -32,7 +32,7 @@ function fServerStart(){
     [ X$multiRfio == X ] && return
 
     pr_debug "in func fServerStart"
-    echo "fio Servers to use are:$fioPressNodes"
+    echo "fio Servers to use are:$fServerNodes"
     if ! [ -z $dryRun ];then
 	[ $verbose -ge 1 ] && echo -e "\t--fServerStart dryRun return---"
 	return
@@ -40,8 +40,8 @@ function fServerStart(){
 
     rfioSvrCmd="fio --server --daemonize=$rfioSvrPidfileName"
 
-    sshChk $fioPressNodes
-    for node in $fioPressNodes;do
+    sshChk $fServerNodes
+    for node in $fServerNodes;do
 	sshpass -p $(gotNodePwd $node) ssh $node "command -v fio >/dev/null 2>&1|| yum --assumeyes install fio"
 	sshpass -p $(gotNodePwd $node) ssh $node "mkdir -p $rfioSvrWorkDir >/dev/null 2>&1"
 	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && $rfioSvrCmd >/dev/null 2>&1"
@@ -58,7 +58,7 @@ function fServerStop(){
 	return
     fi
 
-    for node in $fioPressNodes;do
+    for node in $fServerNodes;do
 	sshpass -p $(gotNodePwd $node) ssh $node "cd $rfioSvrWorkDir && rfioPid=\$(cat $rfioSvrPidfileName) && kill \$rfioPid >/dev/null 2>&1"
 	sshpass -p $(gotNodePwd $node) ssh $node "rm -rf $rfioSvrWorkDir"
     done
@@ -76,7 +76,7 @@ function fServerMkIssue(){
     cp -f $src $dst
 
     i=1
-    for chgs in $fioPressNodesIssueChange;do
+    for chgs in $fServerNodesIssueChange;do
 	[ $i -eq $idx ] && break;
 	((i++))
     done
@@ -103,7 +103,7 @@ function fServerSubmit(){
     name=`basename $issue`
     fioClients=""
 
-    for node in $fioPressNodes;do
+    for node in $fServerNodes;do
 	if ! [ -z $dryRun ];then
 	    nName=host$i
 	else

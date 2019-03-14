@@ -28,6 +28,10 @@ function pr_hint(){
     echo -e "\033[1;31m" "$@" "\033[0m"
 }
 
+function pr_devErr(){
+    [ $verbose -ge 1 ] && echo "$@" >& 2
+}
+
 function gotNodePwd(){
     node=$1
     [ -n $node ] || return
