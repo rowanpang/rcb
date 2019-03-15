@@ -72,32 +72,36 @@ function depCheck(){
 }
 
 function doMon(){
+    recCmd="iostat"
     #disk
     iostat -m sd{a..z} sda{a..z} $interval $count > $dirName/disk.log &
-    pids="$!"
+    pids="$recCmd,$!"
 
     #disk-extra
     iostat -m -x  sd{a..z} sda{a..z} $interval $count > $dirName/disk.log.extra &
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
+    recCmd="sar"
     #net
     sar -n DEV $interval $count > $dirName/net.log 	&
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
     #cpu
     sar -u $interval $count > $dirName/cpu.log	&
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
     sar -P ALL $interval $count > $dirName/cpu.log.per 	&
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
+    recCmd="free"
     #mem
     free -c $count -s $interval -h > $dirName/mem.log &
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
+    recCmd="pidstat"
     #pidstat
     pidstat -l -t -d -u -C "fio|tgtd|icfs|ceph-osd|radosgw" $interval $count > $dirName/pidstat.log &
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
 :<<EOF
     top:
@@ -109,12 +113,15 @@ function doMon(){
 	-w: wild show	#confilict with -o
 	-o: sort by
 EOF
+    recCmd="top"
     COLUMNS=167 top -d $interval -n $count -b -i -c -o RES > $dirName/top.log &
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
+    #/usr/bin/python2 /usr/bin/dstat --nocolor
+    recCmd="python"
     #dstat
     dstat --nocolor > $dirName/dstat.log &
-    pids="$pids $!"
+    pids="$pids $recCmd,$!"
 
     echo $pids > $pidfile
     [ $verbose -ge 1 ] && echo "-----bg pids:$pids----------------"
@@ -143,9 +150,21 @@ function doInit() {
 
 function checkKill() {
     if [ -s $pidfile ];then
-	pids=`cat $pidfile`
-	[ $verbose -ge 1 ] && echo "----kill pids: $pids-----"
-	kill $pids
+	pidCmds=`cat $pidfile`
+	[ $verbose -ge 1 ] && echo "----try kill: $pidCmds-----"
+
+	for pidCmd in $pidCmds;do
+	    pid=${pidCmd#*,}
+	    oCmd=${pidCmd%,*}
+	    [ $verbose -ge 1 ] && echo -e "\t pid-oCmd: $pid-$oCmd---"
+	    cCmd=`ps -o pid,command $pid 2>/dev/null | awk '{if (NR>1) print $2}'`
+
+	    if [ X$cCmd != X ];then
+		match=`echo $cCmd | grep -c $oCmd`
+		[ $match -ge 1 ] && kill $pid || echo "$pid-$oCmd not math cCmd $cCmd,not kill"
+	    fi
+	done
+
 	rm -rf $pidfile
 	exit
     fi
