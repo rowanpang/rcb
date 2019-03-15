@@ -102,8 +102,11 @@ function resDirslevel(){
     folds=""
     for s in ${objSizes//,/ };do
 	dir=`ls -d $calcTgtDir/$resDirPfx$s-* 2>/dev/null`
+	[ X$dir == X ] && pr_debug "cacl host dir: '$calcTgtDir/$resDirPfx$s-*' not exist,skip"
 	folds="$folds $dir"
     done
+
+    [ X$folds == X ] && pr_err "calc host dirs Empty"
 
     for dir in $folds;do
 	pr_debug "---calc for $dir----"
@@ -117,12 +120,13 @@ function doSysCalc(){
     cliHosts=$3
     objSizes=$4
 
+    [ X$topdir != X ] && calcTgtDir=$topdir
+
     pr_debug "calc resDirPfx: $resDirPfx"
     pr_debug "calc strHosts: $strHosts"
     pr_debug "calc cliHosts: $cliHosts"
     pr_debug "calc objSizes: $objSizes"
-
-    [ X$topdir != X ] && calcTgtDir=$topdir
+    pr_debug "calc calcTgtDir: $calcTgtDir"
 
     csvInit
     resDirslevel
