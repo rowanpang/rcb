@@ -240,6 +240,7 @@ function topdirInit() {
 	mv $topdir $topdirbk
     fi
     mkdir $topdir
+    pr_hint "use topdir: $topdir"
 }
 
 function testMain(){
