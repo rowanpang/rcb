@@ -6,6 +6,8 @@ function usage () {
         -h		    Display this message
         -d  dirname	    log dirName
 	-v  verbose level   loglevel [$verbose]
+	-i  interval	    monitor interval [$interval]
+	-c  count	    monitor count [$count]
     "
     exit 0
 }
@@ -26,7 +28,7 @@ function cmdChkInstall(){
 }
 
 function optParser(){
-    while getopts ":hd:v:" opt;do
+    while getopts ":hd:v:i:c:" opt;do
         case $opt in
             h)
                 usage
@@ -36,6 +38,14 @@ function optParser(){
                 ;;
 	    v)
 		verbose="$OPTARG"
+		;;
+	    i)
+		interval="$OPTARG"
+		#update count
+		((count=(1800+$interval-1)/$interval))
+		;;
+	    c)
+		count="$OPTARG"
 		;;
 	    \?)
 		echo "--Invalid args -$OPTARG"
@@ -63,42 +73,43 @@ function depCheck(){
 
 function doMon(){
     #disk
-    iostat -m 1 sd{a..z} sda{a..z} > $dirName/disk.log &
+    iostat -m sd{a..z} sda{a..z} $interval $count > $dirName/disk.log &
     pids="$!"
 
     #disk-extra
-    iostat -m -x 1 sd{a..z} sda{a..z} > $dirName/disk.log.extra &
+    iostat -m -x  sd{a..z} sda{a..z} $interval $count > $dirName/disk.log.extra &
     pids="$pids $!"
 
     #net
-    sar -n DEV 1 > $dirName/net.log 	&
+    sar -n DEV $interval $count > $dirName/net.log 	&
     pids="$pids $!"
 
     #cpu
-    sar -u 1 > $dirName/cpu.log	&
+    sar -u $interval $count > $dirName/cpu.log	&
     pids="$pids $!"
 
-    sar -P ALL 1 > $dirName/cpu.log.per 	&
+    sar -P ALL $interval $count > $dirName/cpu.log.per 	&
     pids="$pids $!"
 
     #mem
-    free -c 3600 -s 1 -h > $dirName/mem.log &
+    free -c $count -s $interval -h > $dirName/mem.log &
     pids="$pids $!"
 
     #pidstat
-    pidstat -l -t -d -u -C "fio|tgtd|icfs|ceph-osd|radosgw" 1 > $dirName/pidstat.log &
+    pidstat -l -t -d -u -C "fio|tgtd|icfs|ceph-osd|radosgw" $interval $count > $dirName/pidstat.log &
     pids="$pids $!"
 
 :<<EOF
     top:
 	-d: interval
+	-n: count
 	-b: batch mode
 	-i: skip idle process
 	-c: command show
 	-w: wild show	#confilict with -o
 	-o: sort by
 EOF
-    COLUMNS=167 top -d 1 -b -i -c -o RES > $dirName/top.log &
+    COLUMNS=167 top -d $interval -n $count -b -i -c -o RES > $dirName/top.log &
     pids="$pids $!"
 
     #dstat
@@ -108,10 +119,6 @@ EOF
     echo $pids > $pidfile
     [ $verbose -ge 1 ] && echo "-----bg pids:$pids----------------"
 }
-
-verbose="1"
-pids=""
-pidfile="pid-bg.log"
 
 function doInit() {
     if [ -z $dirName ];then
@@ -130,6 +137,8 @@ function doInit() {
 
     [ -d $dirName ] && rm -rf $dirName
     mkdir $dirName
+    #init val is based on max run time  half an hour
+    ((count=1800/$interval))
 }
 
 function checkKill() {
@@ -143,16 +152,17 @@ function checkKill() {
 }
 
 function gatherInfo(){
-    lsscsi > $dirName/lsscsi.log
-    df -h > $dirName/df.log
+    pfx="info-"
+    lsscsi > $dirName/${pfx}lsscsi.log
+    df -h > $dirName/${pfx}df.log
 
-    cat /etc/os-release > $dirName/osInfo.log
-    echo >> $dirName/osInfo.log
-    uname -a >> $dirName/osInfo.log
+    cat /etc/os-release > $dirName/${pfx}osInfo.log
+    echo >> $dirName/${pfx}osInfo.log
+    uname -a >> $dirName/${pfx}osInfo.log
 
-    lshw > $dirName/lshw.log
+    lshw > $dirName/${pfx}lshw.log
 
-    ip a > $dirName/ipA.log
+    ip a > $dirName/${pfx}ipA.log
 }
 
 function main(){
@@ -163,5 +173,11 @@ function main(){
     gatherInfo
     doMon
 }
+
+verbose="1"
+pids=""
+pidfile="pid-bg.log"
+interval=1
+count=""
 
 main $@

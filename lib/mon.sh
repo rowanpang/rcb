@@ -113,7 +113,6 @@ function postMon() {
 function doClean() {
     pr_debug "in func doClean"
 
-    nodeinfoFiles=`ls $nodeinfoFile.*`
     for node in $nodesToMon;do
 	echo -e "\tdo doClean for node:$node"
 	workDir=`gotWorkDir $node`
@@ -134,5 +133,6 @@ function doClean() {
 	fi
 	echo
     done
+
     pr_debug "out func doClean"
 }
