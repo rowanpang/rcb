@@ -312,7 +312,7 @@ function docbIssues() {
 }
 
 function docbMkIssueXml(){
-    tmpPrefix=4k
+    fNamePfx=4k
     issues="$@"
     [ $verbose -ge 1 ] && echo "---in func docbMkIssueXml---"
 
@@ -325,14 +325,14 @@ function docbMkIssueXml(){
 
 	dir=`dirname $toMk`
 	name=`basename $toMk`
-	pfx=${name%-*}
+	pfx=${name%-*}		#4k-xx  or rt4k-xx	-->4k/rt4k
 
-	pfxTmp=$(echo $pfx | sed 's/[[:digit:]]\S\+$//')
-	size=$(echo $pfx | sed 's/^[[:alpha:]]\+//')
+	pfxTmp=$(echo $pfx | sed 's/[[:digit:]]\S\+$//')    #--> ''/rt
+	size=$(echo $pfx | sed 's/^[[:alpha:]]\+//')	    #--> 4k
 
-	[ X$pfxTmp != X ] && tmpPrefix=${pfxTmp}4k
+	[ X$pfxTmp != X ] && fNamePfx=${pfxTmp}4k
 
-	if [ X$tmpPrefix == X$pfx ];then
+	if [ X$fNamePfx == X$pfx ];then
 	    continue
 	    [ $verbose -ge 1] && echo "tmpxml self,skip"
 	fi
@@ -354,9 +354,9 @@ function docbMkIssueXml(){
 
 	[ $verbose -ge 1 ] && echo "docbMkIssueXml for $toMk,name(op): $name($op)"
 
-	src=`ls $dir/$tmpPrefix-$op* 2>/dev/null`
+	src=`ls $dir/$fNamePfx-$op* 2>/dev/null`
 	if [ X$src == X ];then
-	    pr_warn "template '$dir/$tmpPrefix-$op*' not exist,skip"
+	    pr_warn "template '$dir/$fNamePfx-$op*' not exist,skip"
 	    continue
 	fi
 

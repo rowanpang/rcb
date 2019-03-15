@@ -102,11 +102,11 @@ function resDirslevel(){
     folds=""
     for s in ${objSizes//,/ };do
 	dir=`ls -d $calcTgtDir/$resDirPfx$s-* 2>/dev/null`
-	[ X$dir == X ] && pr_debug "cacl host dir: '$calcTgtDir/$resDirPfx$s-*' not exist,skip"
+	[ X"$dir" == X ] && pr_debug "cacl host dir: '$calcTgtDir/$resDirPfx$s-*' not exist,skip"
 	folds="$folds $dir"
     done
 
-    [ X$folds == X ] && pr_err "calc host dirs Empty"
+    [ X"$folds" == X ] && pr_err "calc host dirs Empty"
 
     for dir in $folds;do
 	pr_debug "---calc for $dir----"
