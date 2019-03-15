@@ -35,7 +35,6 @@ function doCalcInit() {
     doCalcOpts $@
 
     commInit
-    initHostName
 }
 
 function doCalcCmd(){

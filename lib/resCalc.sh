@@ -117,6 +117,11 @@ function doSysCalc(){
     cliHosts=$3
     objSizes=$4
 
+    pr_debug "calc resDirPfx: $resDirPfx"
+    pr_debug "calc strHosts: $strHosts"
+    pr_debug "calc cliHosts: $cliHosts"
+    pr_debug "calc objSizes: $objSizes"
+
     [ X$topdir != X ] && calcTgtDir=$topdir
 
     csvInit

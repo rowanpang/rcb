@@ -228,6 +228,7 @@ function commInit() {
     done
 
     sshChk $nodesToMon
+    initHostName
 }
 
 function topdirInit() {
