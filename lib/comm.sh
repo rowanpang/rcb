@@ -148,7 +148,7 @@ function sshChk() {
 
 
 #mklist depend on op,size  final
-#s1-op1,s2-op1,sX-op1,s1-op2,sX-op2
+#s1-op1,s1-op2,s1-opX,s2-op1,s2-opx
 function mkIssuesList() {
     sizes="$1"
     ops="$2"
@@ -162,10 +162,10 @@ function mkIssuesList() {
 	    exit 1
 	fi
 	issuesNew=""
-	ops="${ops//,/ }"
-	for op in $ops ;do
-	    sizes="${sizes//,/ }"
-	    for s in $sizes;do
+	sizes="${sizes//,/ }"
+	for s in $sizes;do
+	    ops="${ops//,/ }"
+	    for op in $ops ;do
 		ret=`ls $dir/$s-$op* 2>/dev/null`
 		[ $ret ] && issuesNew="$issuesNew $ret" || issuesNew="$issuesNew $dir/$s-$op"
 	    done

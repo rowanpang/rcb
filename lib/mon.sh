@@ -7,7 +7,7 @@ function preMon(){
     if [ -s $nodeinfoFile ];then
 	echo -n "---file $nodeinfoFile exist"
 	nodeinfoFile="$nodeinfoFile.`date +%s`"
-	echo ",use $nodeinfoFile---"
+	pr_hint ",use $nodeinfoFile---"
     fi
 
     echo "nodes to Mon are:
@@ -112,6 +112,8 @@ function postMon() {
 
 function doClean() {
     pr_debug "in func doClean"
+
+    nodeinfoFiles=`ls $nodeinfoFile.*`
     for node in $nodesToMon;do
 	echo -e "\tdo doClean for node:$node"
 	workDir=`gotWorkDir $node`
