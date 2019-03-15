@@ -92,7 +92,6 @@ function cmdChose() {
 	    ;;
 	clean)
 	    testClean $@
-	    rmNodeinfofile
 	    ;;
 	calc)
 	    doCalcCmd $@
