@@ -6,18 +6,18 @@ cbTdir="./cbTest"
 
 cbdir="/root/cosbench/0.4.2.c4"
 
-rcbResCSV="./rcbResult.csv"
 rcbcsvHeader="stage-iops-bw-lat"
 
 cbResDirPfx="cbRes-"
 cbResCalcPfx='cbRes-w*-'
 
 function rcbcsvInit(){
+    rcbResCSV="${topdir:-.}/rcbResult.csv"
     if ! [ -s $rcbResCSV ];then
-	pr_hint "[init] cb result csv: $rcbResCSV"
+	pr_hint "cb result csv [init] : $rcbResCSV"
 	echo "${rcbcsvHeader//-/,}" > $rcbResCSV
     else
-	pr_hint "[appent] to cb result csv: $rcbResCSV"
+	pr_hint "cb result csv [appent] : $rcbResCSV"
 	echo "${rcbcsvHeader//-/,}" >> $rcbResCSV
 	echo "${rcbcsvHeader//-/,}" >> $rcbResCSV
     fi
@@ -66,9 +66,9 @@ function docbInit() {
 	exit 1
     fi
 
+    topdirInit "rcbTest"
     commInit
     rcbcsvInit
-    topdirInit "rcbTest"
 }
 
 function lineadj(){

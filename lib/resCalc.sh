@@ -12,11 +12,11 @@ function csvInit(){
     syslevelcsvHeaderHost="nodeX$syslevelcsvHeader-pressX${syslevelcsvHeader#*-}"
 
     if ! [ -s $syslevelcsv ];then
-	pr_hint "[init] res csv file: $syslevelcsv"
+	pr_hint "level csv [init] : $syslevelcsv"
 	echo "${syslevelcsvHeaderHost//-/,}" > $syslevelcsv
 	echo "${syslevelcsvHeader//-/,}" >> $syslevelcsv
     else
-	pr_hint "[append] to res csv file: $syslevelcsv"
+	pr_hint "level csv [append]: $syslevelcsv"
 	echo "${syslevelcsvHeader//-/,}" >> $syslevelcsv
 	echo "${syslevelcsvHeader//-/,}" >> $syslevelcsv
     fi
