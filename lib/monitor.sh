@@ -156,12 +156,17 @@ function checkKill() {
 	for pidCmd in $pidCmds;do
 	    pid=${pidCmd#*,}
 	    oCmd=${pidCmd%,*}
-	    [ $verbose -ge 1 ] && echo -e "\t pid-oCmd: $pid-$oCmd---"
+	    [ $verbose -ge 1 ] && echo -ne "\t kill pid-oCmd: $pid-$oCmd---"
 	    cCmd=`ps -o pid,command $pid 2>/dev/null | awk '{if (NR>1) print $2}'`
 
 	    if [ X$cCmd != X ];then
 		match=`echo $cCmd | grep -c $oCmd`
-		[ $match -ge 1 ] && kill $pid || echo "$pid-$oCmd not math cCmd $cCmd,not kill"
+		if [ $match -ge 1 ] ;then
+		    kill $pid
+		    [ $verbose -ge 1 ] && echo "ok"
+		else
+		    [ $verbose -ge 1 ] && echo "not math cCmd $cCmd,skip"
+		fi
 	    fi
 	done
 

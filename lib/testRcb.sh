@@ -36,7 +36,7 @@ function rcbcsvAppend(){
 }
 
 function docbOnCtrlC(){
-    verbose=7
+    verbose=1
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
     echo -e "\e[0m"
