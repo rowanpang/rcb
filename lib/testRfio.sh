@@ -60,7 +60,7 @@ function rfiocsvAppend(){
 function rfiocsvAppendPer(){
     line=$@
 
-    echo -en "\t$rfiocsvHeader: "
+    echo -en "\tper $rfiocsvHeader: "
     for res in $line;do
 	echo -en "$res\t"
     done
@@ -248,11 +248,12 @@ function getResDetails() {
     for f in $files;do
 	iopsline=`grep -m 1 ' IOPS' $f`
 
-	opbw=`iopsbwParserLine "$line"`
+	opbw=`iopsbwParserLine "$iopsline"`
 	opsVal=${opbw%,*}
 	bwVal=${opbw#*,}
 
-	avgstd=`latAvgStdParserLine $line`
+	latline=`grep -m 1 ' lat ' $pfx*`
+	avgstd=`latAvgStdParserLine "$latline"`
 	avgVal=${avgstd%,*}
 	stdVal=${avgstd#*,}
 
@@ -345,7 +346,7 @@ function latAvgStdParserLine() {
 
 function getlatAvgStd() {
     pfx=$1
-    latlines=`grep -m 1 ' lat ' $pfx-*`
+    latlines=`grep -m 1 ' lat ' $pfx*`
     avgValSum=0
     stdValSum=0
     i=0
