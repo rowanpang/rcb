@@ -11,8 +11,8 @@ function promptdefIgnore(){
     promt=$1
     tout=$2
 
-    [ X$promt == X ] && promt="promptdefIgnore"
-    [ X$tout == X ] && tout=3
+    [ X"$promt" == X ] && promt="promptdefIgnore"
+    [ X"$tout" == X ] && tout=3
 
     read -t $tout -p "$promt,Tout:$tout [ignore]:" choise
 

@@ -148,9 +148,9 @@ function fServerWkChk() {
 function rfioDepChk() {
     cmdChkInstall fio
 
-    rbdso=`ldconfg -p | grep librbd`
+    rbdso=`ldconfig -p | grep librbd 2>/dev/null`
 
-    if [ X$rbdso == X ];then
+    if [ X"$rbdso" == X ];then
 	want=`promptdefIgnore "librbd.so not exist chk it?"`
 	[ X$want == X ] && pr_debug "ignore it" || pr_err "librbd not exist"
     fi
