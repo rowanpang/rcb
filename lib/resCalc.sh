@@ -152,9 +152,9 @@ function hostlevel(){
     pdir=$1	#parent dir
 
     idt=`hostIdentify $pdir $strHosts`
-    [ $? -ne 0 ] || pr_err "hostIdentify exec error"
+    [ $? -ne 0 ] && pr_err "hostIdentify exec error"
     strAvg=`hostsAvg $pdir $strHosts`
-    [ $? -ne 0 ] || pr_err "hostavg exec error"
+    [ $? -ne 0 ] && pr_err "hostavg exec error"
     cliAvg=`hostsAvg $pdir $cliHosts`
 
     csvAppend $idt,$strAvg,$cliAvg
