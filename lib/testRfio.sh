@@ -19,7 +19,7 @@ rfioSvrWorkDir="/tmp/rfioServer-22a42fb0e"
 rfioSvrPidfileName="fioServerPid.log"
 
 function dofioOnCtrlC(){
-    verbose=7
+    verbose=1
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
     doClean

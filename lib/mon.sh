@@ -5,9 +5,10 @@ monScript="./monitor.sh"
 
 function preMon(){
     if [ -s $nodeinfoFile ];then
-	echo -n "---file $nodeinfoFile exist"
-	nodeinfoFile="$nodeinfoFile.`date +%s`"
-	pr_hint ",use $nodeinfoFile---"
+	bk="$nodeinfoFile.`date +%s`"
+	mv $nodeinfoFile $bk
+	echo -n "---file $nodeinfoFile exist,"
+	pr_hint "mv to $bk --"
     fi
 
     echo "nodes to Mon are:
@@ -126,7 +127,7 @@ function doClean() {
 	fi
 
 	if [ -z $dryRun ];then
-	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && ./$monScript"
+	    sshpass -p $(gotNodePwd $node) ssh $node "cd $workDir && ./$monScript -v $monVer"
 	    if [ $? ];then
 		sshpass -p $(gotNodePwd $node) ssh $node "rm -rf $workDir"
 	    fi
@@ -142,6 +143,8 @@ function doCleanChk() {
     for node in $nodesToMon;do
 	if [ -z $dryRun ];then
 	    psInfo=`sshpass -p $(gotNodePwd $node) ssh $node "ps -elfH | tail"`
+	    exist=`echo $psInfo | grep -c iostat`
+	    [ $exist -gt 0 ] && verbose=7
 	    [ $verbose -ge 1 ] && echo -e "\t psInfo for $node:"
 	    pr_debug "$psInfo"
 	fi
