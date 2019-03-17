@@ -37,7 +37,7 @@ function csvAppend(){
 function hostIdentify(){
     parentDir=$1
     hosts=$2
-    h=${hosts%%,*}
+    h=${hosts%%,*}  #use the first host to get the $size-$op as idt
 
     hdir=`ls -d $parentDir/$h-* 2>/dev/null`
     [ X"$hdir" == X ] && pr_err  "hostIdentify,hdir under $parentDir not exist"
@@ -114,13 +114,15 @@ function hostsAvg(){
     for h in ${hosts//,/ };do
 	((i++))
 	hdir=`ls -d $parentDir/$h-* 2>/dev/null`
+	[ X$hdir == X ] && pr_err "host dir error under $parentDir"
 	pr_devErr "--hostdir $hdir"
-	cpu=`cat $hdir/cpu.log | awk 'BEGIN{ i=0 } {sum+=$9;i++} END {print 100-sum/i}'`
+
 	disk=`diskCalc $hdir`
-	[ $? ] || pr_err "diskCalc error"
+	[ $? ] || pr_err "diskCalc error for $parentDir"
 	diskSSD=${disk%,*}
 	diskHDD=${disk#*,}
 
+	cpu=`cat $hdir/cpu.log | awk 'BEGIN{ i=1 } {sum+=$9;i++} END {print 100-sum/i}'`
 	netRx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $1}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 	netTx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $2}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 
