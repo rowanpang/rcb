@@ -179,14 +179,27 @@ function mkIssuesList() {
 	    exit 1
 	fi
 	issuesNew=""
+	isfio=`echo $dir | grep -c 'fioT'`
 	sizes="${sizes//,/ }"
-	for s in $sizes;do
-	    ops="${ops//,/ }"
+	ops="${ops//,/ }"
+	if [ $isfio -gt 0 ];then
+	    pr_debug "mkIssuesList for rfio"
 	    for op in $ops ;do
-		ret=`ls $dir/$s-$op* 2>/dev/null`
-		[ $ret ] && issuesNew="$issuesNew $ret" || issuesNew="$issuesNew $dir/$s-$op"
+		for s in $sizes;do
+		    ret=`ls $dir/$s-$op* 2>/dev/null`
+		    [ $ret ] && issuesNew="$issuesNew $ret" || issuesNew="$issuesNew $dir/$s-$op"
+		done
 	    done
-	done
+	else
+	    pr_debug "mkIssuesList for rcb"
+	    for s in $sizes;do
+		for op in $ops ;do
+		    ret=`ls $dir/$s-$op* 2>/dev/null`
+		    [ $ret ] && issuesNew="$issuesNew $ret" || issuesNew="$issuesNew $dir/$s-$op"
+		done
+	    done
+	fi
+
 	finIssues=$issuesNew
     fi
     nums=`echo $finIssues | wc -w`

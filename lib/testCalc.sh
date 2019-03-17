@@ -19,8 +19,8 @@ function doCalcOpts(){
 	    sizes=$cbObjSize
 	    ;;
 	rfio)
-	    pfx=$cbResDirPfx
-	    sizes=$cbObjSize
+	    pfx=$fioResDirPfx
+	    sizes=$fioObjSize
 	    ;;
 	*)
 	    pr_err "calc target should be [rcb or rfio]"
