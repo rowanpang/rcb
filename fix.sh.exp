@@ -1,0 +1,60 @@
+#!/bin/bash
+
+
+function fixObj(){
+    xmldir="./cbTest"
+
+    accKey=7GE498XNIDUBKAYAP9LU
+    secKey=5mVdIGjwdgYm4uB0sXRmCImC66MVqaEfwU618o3f
+
+    gw1="172.16.18.20:7480"
+    gw2="172.16.18.21:7480"
+    gw3="172.16.18.22:7480"
+
+    files="$xmldir/4k-*"
+    sed -i "s#accesskey=.*;secret#accesskey=$accKey;secret#" 					$files
+    sed -i "s#secretkey=.*;end#secretkey=$secKey;end#" 						$files
+    sed -i "s#192.168.11.1:8080#$gw1#; s#192.168.11.2:8080#$gw2#; s#192.168.11.3:8080#$gw3#" 	$files
+
+    rt1="172.16.18.201:8060"
+    rt2="172.16.18.202:8060"
+    rt3="172.16.18.203:8060"
+
+    files="$xmldir/rt4k-*"
+    sed -i "s#accesskey=.*;secret#accesskey=$accKey;secret#" 					$files
+    sed -i "s#secretkey=.*;end#secretkey=$secKey;end#" 						$files
+    sed -i "s#192.168.11.1:8080#$rt1#; s#192.168.11.2:8080#$rt2#; s#192.168.11.3:8080#$rt3#" 	$files
+}
+
+function fixRBD(){
+    cfgDir="./fioT-rbd"
+
+    poolName=pool-a139a2f7b1714619beed0b8f9718f307
+    rbdName=volume-3d5d9cedf83a4070b02d03dee2f780c7
+
+    sed -i "s#^pool=.*#pool=$poolName#" $cfgDir/*
+    sed -i "s#^rbdname=.*#rbdname=$rbdName#" $cfgDir/*
+}
+
+function main() {
+    while [ "TRUE" ];do
+	read -p "which to fix 'rcb/rfio' [null]: " tofix
+
+	case $tofix in
+	    rcb)
+		fixObj
+		;;
+	    rfio)
+		fixRBD
+		;;
+	    *)
+		echo "intpu error,again"
+		continue
+		;;
+	esac
+
+	break
+    done
+}
+
+main
