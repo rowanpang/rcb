@@ -237,7 +237,7 @@ function dorfio(){
 }
 
 function getResDetails() {
-    pr_debug"in func getResDetails"
+    pr_debug "in func getResDetails"
 
     idt=$1
     pfx=$2
@@ -293,7 +293,7 @@ function iopsbwParserLine() {
     esac
     pr_devErr echo "iops-bw: $ops - $bw"
 
-    echo "opsVal,bwVal"
+    echo "$opsVal,$bwVal"
 }
 
 function getIOPSBW() {
@@ -340,7 +340,7 @@ function latAvgStdParserLine() {
     esac
     #function_body
 
-    echo "avgVal,stdVal"
+    echo "$avgVal,$stdVal"
 }
 
 function getlatAvgStd() {
