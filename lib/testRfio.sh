@@ -23,6 +23,7 @@ function dofioOnCtrlC(){
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
 
     doClean
+    doCleanChk
 
     fServerStop
     exit 1

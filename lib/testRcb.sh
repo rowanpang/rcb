@@ -47,6 +47,7 @@ function docbOnCtrlC(){
     fi
 
     doClean
+    doCleanChk
     exit 1
 }
 
