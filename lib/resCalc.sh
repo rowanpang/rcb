@@ -118,7 +118,7 @@ function hostsAvg(){
 	pr_devErr "--hostdir $hdir"
 
 	disk=`diskCalc $hdir`
-	[ $? -ne 0 ] || pr_err "diskCalc error for $parentDir"
+	[ $? -ne 0 ] && pr_err "diskCalc error for $parentDir"
 	diskSSD=${disk%,*}
 	diskHDD=${disk#*,}
 
