@@ -248,12 +248,12 @@ function getResDetails() {
     for f in $files;do
 	iopsline=`grep -m 1 ' IOPS' $f`
 
-	opbw=`iopsbwParserLine "$iopsline"`
+	opbw=`iopsbwParserLine "ALIGN $iopsline"`	    #add ALIGN word to align with grep multi files
 	opsVal=${opbw%,*}
 	bwVal=${opbw#*,}
 
 	latline=`grep -m 1 ' lat ' $pfx*`
-	avgstd=`latAvgStdParserLine "$latline"`
+	avgstd=`latAvgStdParserLine "ALIGN $latline"`
 	avgVal=${avgstd%,*}
 	stdVal=${avgstd#*,}
 
