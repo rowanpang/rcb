@@ -22,7 +22,7 @@ function pr_warn(){
 
 function pr_err(){
     #31m,red
-    echo -e "\033[1;31m" ERROR! "$@",exit -1 "\033[0m"
+    echo -e "\033[1;31m" ERROR! "$@",exit -1 "\033[0m" >& 2
     exit -1
 }
 

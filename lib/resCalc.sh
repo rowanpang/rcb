@@ -40,7 +40,7 @@ function hostIdentify(){
     h=${hosts%%,*}
 
     hdir=`ls -d $parentDir/$h-* 2>/dev/null`
-
+    [ X"$hdir" == X ] && pr_err  "hostIdentify,hdir under $parentDir not exist"
     pr_devErr "idt Host dir:$hdir"
 
     bName=`basename $hdir`
