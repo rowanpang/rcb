@@ -55,7 +55,7 @@ function diskCalc(){
     file="$pdir/disk.log.extra"
     lsscsi=`ls $pdir/*lsscsi.log 2>/dev/null`
 
-    [ X"$lsscsi" == X ] || pr_err "pdir:$pdir,lsscsi not exist"
+    [ X"$lsscsi" == X ] && pr_err "pdir:$pdir,lsscsi not exist"
 
     ssds=`grep 'INTEL SSD\|Micron_' $lsscsi | awk -F '/' '{printf $3}'`
     ssdsReg=${ssds// /|}
@@ -117,6 +117,7 @@ function hostsAvg(){
 	pr_devErr "--hostdir $hdir"
 	cpu=`cat $hdir/cpu.log | awk 'BEGIN{ i=0 } {sum+=$9;i++} END {print 100-sum/i}'`
 	disk=`diskCalc $hdir`
+	[ $? ] || pr_err "diskCalc error"
 	diskSSD=${disk%,*}
 	diskHDD=${disk#*,}
 
@@ -149,6 +150,7 @@ function hostlevel(){
     pdir=$1	#parent dir
 
     idt=`hostIdentify $pdir $strHosts`
+    [ $? ] || pr_err "hostIdentify exec error"
     strAvg=`hostsAvg $pdir $strHosts`
     cliAvg=`hostsAvg $pdir $cliHosts`
 
