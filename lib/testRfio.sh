@@ -248,7 +248,7 @@ function getResDetails() {
     for f in $files;do
 	iopsline=`grep -m 1 ' IOPS' $f`
 
-	opbw=`iopsbwParserLine $line`
+	opbw=`iopsbwParserLine "$line"`
 	opsVal=${opbw%,*}
 	bwVal=${opbw#*,}
 
@@ -308,7 +308,7 @@ function getIOPSBW() {
     OIFS=$IFS
     IFS=$'\n'
     for line in $iopslines;do
-	opbw=`iopsbwParserLine $line`
+	opbw=`iopsbwParserLine "$line"`
 	opsVal=${opbw%,*}
 	bwVal=${opbw#*,}
 
