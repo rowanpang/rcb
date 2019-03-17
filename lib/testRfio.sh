@@ -20,6 +20,33 @@ fServerNodesIssueChange="
 rfioSvrWorkDir="/tmp/rfioServer-22a42fb0e"
 rfioSvrPidfileName="fioServerPid.log"
 
+rfiocsvHeader="stage-iops-bw-lat"
+
+function rfiocsvInit() {
+    #function_body
+    rfioResCSV="${topdir:-.}/rcbResult.csv"
+    if ! [ -s $rfioResCSV ];then
+	pr_hint "rfio result csv [init] : $rfioResCSV"
+	echo "${rcbcsvHeader//-/,}" > $rfioResCSV
+    else
+	pr_hint "rfio result csv [appent] : $rfioResCSV"
+	echo "${rcbcsvHeader//-/,}" >> $rfioResCSV
+	echo "${rcbcsvHeader//-/,}" >> $rfioResCSV
+    fi
+}
+
+function rfiocsvAppend(){
+    line=$@
+
+    echo -en "\t$rfiocsvHeader: "
+    for res in $line;do
+	echo -en "$res\t"
+    done
+    echo
+
+    echo ${line// /,} >> $rfioResCSV
+}
+
 function dofioOnCtrlC(){
     verbose=1
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
@@ -166,6 +193,7 @@ function dofioInit(){
     rfioDepChk
 
     topdirInit "rfioTest"
+    rfiocsvInit
 
     fServerStart
 }
@@ -184,6 +212,92 @@ function dorfio(){
 
 
     doSysCalc "$fioResCalcPfx" "$strHostNames " "$pressHostNames " $objSize
+}
+
+function getIOPSBW() {
+    pfx=$1
+
+    iopslines=`grep -m 1 ' IOPS' $pfx*`
+    pr_devErr "$iopslines"
+
+    opsValSum=0
+    bwValSum=0
+
+    OIFS=$IFS
+    IFS=$'\n'
+    for line in $iopslines;do
+	ops=`echo $line | awk '{print $3}'`
+	ops=${ops%,};ops=${ops#*=}
+
+	opsVal=`echo $ops | tr -d '[:alpha:]' `
+	opsUnit=`echo $ops | tr -d '[:digit:]'.`
+	pr_devErr "opsVal-opsUnit: $opsVal-$opsUnit"
+
+	case $opsUnit in
+	    k|K)
+	       opsVal=`echo "scale=2;$opsVal*1000" | bc `
+	       ;;
+	esac
+
+	bw=`echo $line | awk '{print $4}'`
+	bw=${bw#*=}
+
+	bwVal=`echo $bw | tr -d '[:alpha:]/'`
+	bwUnit=`echo $bw | tr -d '[:digit:]'.`
+	pr_devErr "bwVal-bwUnit: $bwVal-$bwUnit"
+
+	case $bwUnit in
+	    MiB/s)
+	       ;;
+	esac
+
+	echo "iops-bw: $ops - $bw"
+
+	opsValSum=`echo "scale=2; $opsValSum+$opsVal" | bc `
+	bwValSum=`echo "scale=2; $bwValSum+$bwVal" | bc `
+    done
+    IFS="$OIFS"
+    echo "$opsValSum,$bwValSum"
+}
+
+function getlatAvgStd() {
+    pfx=$1
+    latlines=`grep -m 1 ' lat ' $pfx-*`
+    avgValSum=0
+    stdValSum=0
+    i=0
+
+    OIFS=$IFS
+    IFS=$'\n'
+    for line in $latlines;do
+	((i++))
+	unit=`echo $line | awk '{print $3}'`
+	unit=`echo $unit | tr -d '():'`
+
+	avg=`echo $line | awk '{print $6}' `
+	avgVal=${avg%,};avgVal=${avgVal#*=}
+
+	std=`echo $line | awk '{print $7}' `
+	stdVal=${std%,};stdVal=${stdVal#*=}
+
+	pr_devErr "unit-avgVal-stdVal: $unit-$avgVal-$stdval"
+
+	case $unit in
+	    usec)
+		avgVal=`echo "scale=2;$avgVal/1000" | bc`
+		stdVal=`echo "scale=2;$stdVal/1000" | bc`
+		;;
+	esac
+
+	avgValSum=`echo "scale=2; $avgValSum+$avgVal" | bc `
+	stdValSum=`echo "scale=2; $stdValSum+$stdVal" | bc `
+
+    done
+
+    avgVal=`echo "scale=2;$avgValSum/$i" | bc`
+    stdVal=`echo "scale=2;$stdValSum/$i" | bc`
+
+    echo "$avgVal,$stdVal"
 }
 
 function dofiosubmit() {
@@ -214,11 +328,16 @@ function dofiosubmit() {
     fServerWkChk
 
     echo
-    resTxt=`grep ': IOPS=' $resLog*`
-    echo -e "\t$resTxt"
-    resTxt=`grep ' lat ' -m 1 $resLog*`
-    echo -e "\t$resTxt"
-    echo
+    iopsBW=`getIOPSBW $resLog`
+    avgStd=`getlatAvgStd $resLog`
+
+    iops=${iopsBW%,*}
+    bw=${iopsBW#*,}
+
+    latAvg=${avgStd%,*}
+    stdAvg=${avgStd#*,}
+    echo "res for $idtSuffix: $iops,$bw  $latAvg,$stdAvg"
+    rfiocsvAppend "$idtSuffix,$iops,$bw,$latAvg,$stdAvg"
 }
 
 function dofioIssues() {
