@@ -118,7 +118,7 @@ function hostsAvg(){
 	pr_devErr "--hostdir $hdir"
 
 	disk=`diskCalc $hdir`
-	[ $? ] || pr_err "diskCalc error for $parentDir"
+	[ $? -ne 0 ] || pr_err "diskCalc error for $parentDir"
 	diskSSD=${disk%,*}
 	diskHDD=${disk#*,}
 
@@ -152,9 +152,9 @@ function hostlevel(){
     pdir=$1	#parent dir
 
     idt=`hostIdentify $pdir $strHosts`
-    [ $? ] || pr_err "hostIdentify exec error"
+    [ $? -ne 0 ] || pr_err "hostIdentify exec error"
     strAvg=`hostsAvg $pdir $strHosts`
-    [ $? ] || pr_err "hostavg exec error"
+    [ $? -ne 0 ] || pr_err "hostavg exec error"
     cliAvg=`hostsAvg $pdir $cliHosts`
 
     csvAppend $idt,$strAvg,$cliAvg
