@@ -8,7 +8,7 @@ objSizes="4k,16k,256k,1m"
 
 function csvInit(){
     syslevelcsv="$calcTgtDir/levelResult.csv"
-    syslevelcsvHeader="idt-cpu-disk-netRx-netTx"
+    syslevelcsvHeader="idt-cpu-ssd-hdd-netRx-netTx"
     syslevelcsvHeaderHost="nodeX$syslevelcsvHeader-pressX${syslevelcsvHeader#*-}"
 
     if ! [ -s $syslevelcsv ];then
