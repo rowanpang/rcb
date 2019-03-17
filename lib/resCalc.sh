@@ -154,6 +154,7 @@ function hostlevel(){
     idt=`hostIdentify $pdir $strHosts`
     [ $? ] || pr_err "hostIdentify exec error"
     strAvg=`hostsAvg $pdir $strHosts`
+    [ $? ] || pr_err "hostavg exec error"
     cliAvg=`hostsAvg $pdir $cliHosts`
 
     csvAppend $idt,$strAvg,$cliAvg
