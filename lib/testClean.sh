@@ -13,4 +13,5 @@ function testClean(){
     done
 
 
+    doCleanChk
 }
