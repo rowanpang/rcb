@@ -252,7 +252,7 @@ function getResDetails() {
 	opsVal=${opbw%,*}
 	bwVal=${opbw#*,}
 
-	latline=`grep -m 1 ' lat ' $f*`
+	latline=`grep -m 1 ' lat ' $f`
 	avgstd=`latAvgStdParserLine "ALIGN $latline"`
 	avgVal=${avgstd%,*}
 	stdVal=${avgstd#*,}
@@ -321,6 +321,7 @@ function getIOPSBW() {
 }
 
 function latAvgStdParserLine() {
+    line="$1"
 
     unit=`echo $line | awk '{print $3}'`
     unit=`echo $unit | tr -d '():'`
