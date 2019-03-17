@@ -19,7 +19,7 @@ function doCalcOpts(){
 	    sizes=$cbObjSize
 	    ;;
 	rfio)
-	    pfx=$fioResDirPfx
+	    pfx=$fioResCalcPfx
 	    sizes=$fioObjSize
 	    ;;
 	*)
