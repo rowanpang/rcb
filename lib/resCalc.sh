@@ -60,7 +60,7 @@ function diskCalc(){
 
     [ X$ssdsReg == X ] && ssdsReg="###"		#for NONE ssd case
 
-    pr_debug "ssdsReg: $ssdsReg"
+    pr_devErr "ssdsReg: $ssdsReg"
 
     cat $file | grep "^sd" | awk -v ssdReg="$ssdsReg" ' BEGIN{
 	    hddIdx=1
@@ -116,7 +116,7 @@ function hostsAvg(){
 	netRx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $1}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 	netTx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $2}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 
-	pr_devErr "--varCpu: $cpu,$netRx,$netTx"
+	pr_devErr "--hostVal: $cpu,$diskSSD,$diskHDD,$netRx,$netTx"
 
 	cpuSum=`echo "scale=2;$cpuSum+$cpu" | bc`
 	diskSSDSum=`echo "scale=2;$diskSSDSum+$diskSSD" | bc`
