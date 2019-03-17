@@ -69,18 +69,22 @@ function diskCalc(){
 	    ssdSum=0
 	} {
 	    dev=$1
+	    util=$NF
+	    #there are more record for sysstat version 11.7.3 than 10.1.5
+	    #Device	r/s     w/s     rMB/s     wMB/s   rrqm/s   wrqm/s %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
+	    #Device:	rrqm/s   wrqm/s     r/s     w/s    rMB/s wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm %util
 	    if(match(dev,ssdReg) != 0){
 		#printf("%s match\n",dev)
 		#for not used disk for system disk
-		if( $14 > 10){
-		    ssdSum+=$14;
+		if( util > 10){
+		    ssdSum+=util
 		    ssdIdx++
 		}
 	    }else{
 		#printf("%s not match\n",dev)
 		#for not used disk for system disk
-		if( $14 > 10){
-		    hddSum+=$14;
+		if( util > 10){
+		    hddSum+=util
 		    hddIdx++
 		}
 	    }
