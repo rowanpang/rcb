@@ -4,6 +4,7 @@ fioTestOps="rand-write,seq-write,rand-read,seq-read,rand-rw,seq-rw"
 fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
+fioResDirPfx="fioR-"
 
 fioClients=""
 fServerNodes="
@@ -179,6 +180,9 @@ function dorfio(){
 
     dofioIssues $finIssues
     fServerStop
+
+
+    doSysCalc "$fioResDirPfx" "$strHostNames " "$pressHostNames " $objSize
 }
 
 function dofiosubmit() {
@@ -193,7 +197,7 @@ function dofiosubmit() {
     #fio-rbd/fioT-4k-rw.txt
     dirName=`dirname $issue`
     devType=${dirName#*-}
-    resDir="$topdir/fioR-$devType-${idtSuffix}"
+    resDir="$topdir/$fioResDirPfx$devType-${idtSuffix}"
     if [ -d $resDir ];then
         echo "$resDir duplicate, mv to date +%s format"
         mv $resDir $resDir-`date +%s`
