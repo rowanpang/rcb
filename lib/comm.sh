@@ -7,6 +7,23 @@ nodeinfoFile='./nodeinfo.log'
 nodesToMon=""
 nodesToMonPwds=""
 
+function promptdefIgnore(){
+    promt=$1
+    tout=$2
+
+    [ X$promt == X ] && promt="promptdefIgnore"
+    [ X$tout == X ] && tout=3
+
+    read -t $tout -p "$promt,Tout:$tout [ignore]:" choise
+
+    if ! [ $? ];then
+	pr_devErr "time out ignore it"
+	echo ""
+    else
+	echo "NotIgnore"
+    fi
+}
+
 function pr_info(){
     [ $verbose -ge 2 ] && echo "$@"
 }

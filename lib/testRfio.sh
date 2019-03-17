@@ -145,11 +145,22 @@ function fServerWkChk() {
     done
 }
 
+function rfioDepChk() {
+    cmdChkInstall fio
+
+    rbdso=`ldconfg -p | grep librbd`
+
+    if [ X$rbdso == X ];then
+	want=`promptdefIgnore "librbd.so not exist chk it?"`
+	[ X$want == X ] && pr_debug "ignore it" || pr_err "librbd not exist"
+    fi
+}
+
 function dofioInit(){
     trap 'dofioOnCtrlC' INT
 
     commInit
-    cmdChkInstall fio
+    rfioDepChk
 
     topdirInit "rfioTest"
 
