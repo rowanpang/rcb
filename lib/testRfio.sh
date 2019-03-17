@@ -164,7 +164,7 @@ function fServerWkChk() {
 
 	for cli in $fioClients;do
 	    ps $cli
-	    [ $? ] && toChk="$toChk $cli"
+	    [ $? -eq 0 ] && toChk="$toChk $cli"
 	done
 
 	[ X"$toChk" == X ] && break
