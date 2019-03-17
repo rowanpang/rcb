@@ -48,7 +48,7 @@ function rfiocsvInit() {
 function rfiocsvAppend(){
     line=$@
 
-    echo -en "\t$rfiocsvHeader: "
+    echo -en "\trfio final $rfiocsvHeader: "
     for res in $line;do
 	echo -en "$res\t"
     done
@@ -252,7 +252,7 @@ function getResDetails() {
 	opsVal=${opbw%,*}
 	bwVal=${opbw#*,}
 
-	latline=`grep -m 1 ' lat ' $pfx*`
+	latline=`grep -m 1 ' lat ' $f*`
 	avgstd=`latAvgStdParserLine "ALIGN $latline"`
 	avgVal=${avgstd%,*}
 	stdVal=${avgstd#*,}
@@ -409,7 +409,6 @@ function dofiosubmit() {
     latAvg=${avgStd%,*}
     stdAvg=${avgStd#*,}
 
-    echo "final res for $idtSuffix: $iops,$bw  $latAvg,$stdAvg"
     rfiocsvAppend "$idtSuffix,$iops,$bw,$latAvg,$stdAvg"
 }
 
