@@ -136,3 +136,16 @@ function doClean() {
 
     pr_debug "out func doClean"
 }
+
+function doCleanChk() {
+    pr_debug "in func doCleanChk"
+    for node in $nodesToMon;do
+	if [ -z $dryRun ];then
+	    psInfo=`sshpass -p $(gotNodePwd $node) ssh $node "ps -elfH | tail"`
+	    [ $verbose -ge 1 ] && echo -e "\t psInfo for $node:"
+	    pr_debug "$psInfo"
+	fi
+    done
+
+    pr_debug "out func doCleanChk"
+}

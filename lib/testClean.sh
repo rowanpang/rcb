@@ -11,4 +11,6 @@ function testClean(){
 	doClean
 	rmNodeinfofile
     done
+
+
 }
