@@ -48,6 +48,50 @@ function hostIdentify(){
     echo ${bName#*-}
 }
 
+function diskCalc(){
+    #out put ssdAvg,hddAvg
+    pdir=$1
+
+    file="$pdir/disk.log.extra"
+    lsscsi=`ls $pdir/*lsscsi.log`
+    ssds=`grep 'INTEL SSD\|Micron_' $lsscsi | awk -F '/' '{printf $3}'`
+    ssdsReg=${ssds// /|}
+    ssdsReg=${ssdsReg%|}
+
+    [ X$ssdsReg == X ] && ssdsReg="###"		#for NONE ssd case
+
+    pr_debug "ssdsReg: $ssdsReg"
+
+    cat $file | grep "^sd" | awk -v ssdReg="$ssdsReg" ' BEGIN{
+	    hddIdx=1
+	    hddSum=0
+	    ssdIdx=1
+	    ssdSum=0
+	} {
+	    dev=$1
+	    if(match(dev,ssdReg) != 0){
+		#printf("%s match\n",dev)
+		#for not used disk for system disk
+		if( $14 > 10){
+		    ssdSum+=$14;
+		    ssdIdx++
+		}
+	    }else{
+		#printf("%s not match\n",dev)
+		#for not used disk for system disk
+		if( $14 > 10){
+		    hddSum+=$14;
+		    hddIdx++
+		}
+	    }
+	} END {
+	    hddSum+=hddIdx-1
+	    ssdSum+=ssdIdx-1
+
+	    printf("%.2f,%.2f\n",ssdSum/ssdIdx,hddSum/hddIdx)
+	}'
+}
+
 function hostsAvg(){
     parentDir=$1
     hosts=$2
@@ -55,37 +99,43 @@ function hostsAvg(){
     pr_devErr "--hosts: $hosts"
     i=0
     cpuSum=0
-    diskSum=0
     netRxSum=0
     netTxSum=0
+    diskSSDSum=0
+    diskHDDSum=0
 
     for h in ${hosts//,/ };do
 	((i++))
 	hdir=`ls -d $parentDir/$h-* 2>/dev/null`
 	pr_devErr "--hostdir $hdir"
 	cpu=`cat $hdir/cpu.log | awk 'BEGIN{ i=0 } {sum+=$9;i++} END {print 100-sum/i}'`
-	disk=`cat $hdir/disk.log.extra | awk 'BEGIN{ i=1 } {if($14>15){sum+=$14;i++}} END {sum+=i;print  sum/i}'`
+	disk=`diskCalc $hdir`
+	diskSSD=${disk%,*}
+	diskHDD=${disk#*,}
+
 	netRx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $1}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 	netTx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $2}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 
-	pr_devErr "--varCpu: $cpu,$disk,$netRx,$netTx"
+	pr_devErr "--varCpu: $cpu,$netRx,$netTx"
 
 	cpuSum=`echo "scale=2;$cpuSum+$cpu" | bc`
-	diskSum=`echo "scale=2;$diskSum+$disk" | bc`
+	diskSSDSum=`echo "scale=2;$diskSSDSum+$diskSSD" | bc`
+	diskHDDSum=`echo "scale=2;$diskHDDSum+$diskHDD" | bc`
 	netRxSum=`echo "scale=2;$netRxSum+$netRx" | bc`
 	netTxSum=`echo "scale=2;$netTxSum+$netTx" | bc`
     done
 
     [ $i -eq 0 ] && i=1
 
-    pr_devErr "---sum:$i,$cpuSum,$diskSum,$netRxSum,$netTxSum"
+    pr_devErr "---hdir count $i:$cpuSum,$diskSSDSum,$diskHDDSum,$netRxSum,$netTxSum"
 
     cpuAvg=`echo "scale=2;$cpuSum/$i" | bc `
-    diskAvg=`echo "scale=2;$diskSum/$i" | bc `
+    diskSSDAvg=`echo "scale=2;$diskSSDSum/$i" | bc `
+    diskHDDAvg=`echo "scale=2;$diskHDDSum/$i" | bc `
     netRxAvg=`echo "scale=2;$netRxSum/$i" | bc `
     netTxAvg=`echo "scale=2;$netTxSum/$i" | bc `
 
-    echo "$cpuAvg,$diskAvg,$netRxAvg,$netTxAvg"
+    echo "$cpuAvg,$diskSSDAvg,$diskHDDAvg,$netRxAvg,$netTxAvg"
 }
 
 function hostlevel(){
