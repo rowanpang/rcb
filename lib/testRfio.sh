@@ -20,7 +20,7 @@ fServerNodesIssueChange="
 rfioSvrWorkDir="/tmp/rfioServer-22a42fb0e"
 rfioSvrPidfileName="fioServerPid.log"
 
-rfiocsvHeader="stage-iops-bw-lat"
+rfiocsvHeader="stage-iops-bw-latAvg-latStd"
 
 function rfiocsvInit() {
     #function_body
@@ -32,6 +32,16 @@ function rfiocsvInit() {
 	pr_hint "rfio result csv [appent] : $rfioResCSV"
 	echo "${rcbcsvHeader//-/,}" >> $rfioResCSV
 	echo "${rcbcsvHeader//-/,}" >> $rfioResCSV
+    fi
+
+    rfioResCSVPer="${topdir:-.}/rcbResult.per.csv"
+    if ! [ -s $rfioResCSVPer ];then
+	pr_hint "rfio result csv [init] : $rfioResCSVPer"
+	echo "${rcbcsvHeader//-/,}" > $rfioResCSV
+    else
+	pr_hint "rfio result csv [appent] : $rfioResCSVPer"
+	echo "${rcbcsvHeader//-/,}" >> $rfioResCSVPer
+	echo "${rcbcsvHeader//-/,}" >> $rfioResCSVPer
     fi
 }
 
@@ -45,6 +55,18 @@ function rfiocsvAppend(){
     echo
 
     echo ${line// /,} >> $rfioResCSV
+}
+
+function rfiocsvAppendPer(){
+    line=$@
+
+    echo -en "\t$rfiocsvHeader: "
+    for res in $line;do
+	echo -en "$res\t"
+    done
+    echo
+
+    echo ${line// /,} >> $rfioResCSVPer
 }
 
 function dofioOnCtrlC(){
@@ -214,6 +236,66 @@ function dorfio(){
     doSysCalc "$fioResCalcPfx" "$strHostNames " "$pressHostNames " $objSize
 }
 
+function getResDetails() {
+    pr_debug"in func getResDetails"
+
+    idt=$1
+    pfx=$2
+
+    files=`ls $pfx* 2>/dev/null`
+    [ X"$files" == X ] && pr_err "res file not exist for fpx $pfx"
+
+    for f in $files;do
+	iopsline=`grep -m 1 ' IOPS' $f`
+
+	opbw=`iopsbwParserLine $line`
+	opsVal=${opbw%,*}
+	bwVal=${opbw#*,}
+
+	avgstd=`latAvgStdParserLine $line`
+	avgVal=${avgstd%,*}
+	stdVal=${avgstd#*,}
+
+	pr_debug "res for $f: $opsVal,$bwVal , $avgVal,$stdVal"
+
+	rfiocsvAppendPer "$idt,$opsVal,$bwVal,$avgVal,$stdVal"
+
+    done
+
+    pr_debug "out func getResDetails"
+}
+
+function iopsbwParserLine() {
+    line="$1"
+    ops=`echo $line | awk '{print $3}'`
+    ops=${ops%,};ops=${ops#*=}
+
+    opsVal=`echo $ops | tr -d '[:alpha:]' `
+    opsUnit=`echo $ops | tr -d '[:digit:]'.`
+    pr_devErr "opsVal-opsUnit: $opsVal-$opsUnit"
+
+    case $opsUnit in
+	k|K)
+	   opsVal=`echo "scale=2;$opsVal*1000" | bc `
+	   ;;
+    esac
+
+    bw=`echo $line | awk '{print $4}'`
+    bw=${bw#*=}
+
+    bwVal=`echo $bw | tr -d '[:alpha:]/'`
+    bwUnit=`echo $bw | tr -d '[:digit:]'.`
+    pr_devErr "bwVal-bwUnit: $bwVal-$bwUnit"
+
+    case $bwUnit in
+	MiB/s)
+	   ;;
+    esac
+    pr_devErr echo "iops-bw: $ops - $bw"
+
+    echo "opsVal,bwVal"
+}
+
 function getIOPSBW() {
     pfx=$1
 
@@ -226,38 +308,39 @@ function getIOPSBW() {
     OIFS=$IFS
     IFS=$'\n'
     for line in $iopslines;do
-	ops=`echo $line | awk '{print $3}'`
-	ops=${ops%,};ops=${ops#*=}
-
-	opsVal=`echo $ops | tr -d '[:alpha:]' `
-	opsUnit=`echo $ops | tr -d '[:digit:]'.`
-	pr_devErr "opsVal-opsUnit: $opsVal-$opsUnit"
-
-	case $opsUnit in
-	    k|K)
-	       opsVal=`echo "scale=2;$opsVal*1000" | bc `
-	       ;;
-	esac
-
-	bw=`echo $line | awk '{print $4}'`
-	bw=${bw#*=}
-
-	bwVal=`echo $bw | tr -d '[:alpha:]/'`
-	bwUnit=`echo $bw | tr -d '[:digit:]'.`
-	pr_devErr "bwVal-bwUnit: $bwVal-$bwUnit"
-
-	case $bwUnit in
-	    MiB/s)
-	       ;;
-	esac
-
-	echo "iops-bw: $ops - $bw"
+	opbw=`iopsbwParserLine $line`
+	opsVal=${opbw%,*}
+	bwVal=${opbw#*,}
 
 	opsValSum=`echo "scale=2; $opsValSum+$opsVal" | bc `
 	bwValSum=`echo "scale=2; $bwValSum+$bwVal" | bc `
     done
     IFS="$OIFS"
     echo "$opsValSum,$bwValSum"
+}
+
+function latAvgStdParserLine() {
+
+    unit=`echo $line | awk '{print $3}'`
+    unit=`echo $unit | tr -d '():'`
+
+    avg=`echo $line | awk '{print $6}' `
+    avgVal=${avg%,};avgVal=${avgVal#*=}
+
+    std=`echo $line | awk '{print $7}' `
+    stdVal=${std%,};stdVal=${stdVal#*=}
+
+    pr_devErr "unit-avgVal-stdVal: $unit-$avgVal-$stdval"
+
+    case $unit in
+	usec)
+	    avgVal=`echo "scale=2;$avgVal/1000" | bc`
+	    stdVal=`echo "scale=2;$stdVal/1000" | bc`
+	    ;;
+    esac
+    #function_body
+
+    echo "avgVal,stdVal"
 }
 
 function getlatAvgStd() {
@@ -271,27 +354,12 @@ function getlatAvgStd() {
     IFS=$'\n'
     for line in $latlines;do
 	((i++))
-	unit=`echo $line | awk '{print $3}'`
-	unit=`echo $unit | tr -d '():'`
-
-	avg=`echo $line | awk '{print $6}' `
-	avgVal=${avg%,};avgVal=${avgVal#*=}
-
-	std=`echo $line | awk '{print $7}' `
-	stdVal=${std%,};stdVal=${stdVal#*=}
-
-	pr_devErr "unit-avgVal-stdVal: $unit-$avgVal-$stdval"
-
-	case $unit in
-	    usec)
-		avgVal=`echo "scale=2;$avgVal/1000" | bc`
-		stdVal=`echo "scale=2;$stdVal/1000" | bc`
-		;;
-	esac
+	avgstd=`latAvgStdParserLine $line`
+	avgVal=${avgstd%,*}
+	stdVal=${avgstd#*,}
 
 	avgValSum=`echo "scale=2; $avgValSum+$avgVal" | bc `
 	stdValSum=`echo "scale=2; $stdValSum+$stdVal" | bc `
-
     done
 
     avgVal=`echo "scale=2;$avgValSum/$i" | bc`
@@ -328,6 +396,9 @@ function dofiosubmit() {
     fServerWkChk
 
     echo
+
+    getResDetails $idtSuffix $resLog
+
     iopsBW=`getIOPSBW $resLog`
     avgStd=`getlatAvgStd $resLog`
 
@@ -336,7 +407,8 @@ function dofiosubmit() {
 
     latAvg=${avgStd%,*}
     stdAvg=${avgStd#*,}
-    echo "res for $idtSuffix: $iops,$bw  $latAvg,$stdAvg"
+
+    echo "final res for $idtSuffix: $iops,$bw  $latAvg,$stdAvg"
     rfiocsvAppend "$idtSuffix,$iops,$bw,$latAvg,$stdAvg"
 }
 
