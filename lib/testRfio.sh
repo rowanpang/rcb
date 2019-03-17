@@ -5,6 +5,7 @@ fioObjSize="4k,16k,64k,512k,1m"
 fioTdir="./fioT-rbd"
 
 fioResDirPfx="fioR-"
+fioResCalcPfx='fioR-*-'
 
 fioClients=""
 fServerNodes="
@@ -182,7 +183,7 @@ function dorfio(){
     fServerStop
 
 
-    doSysCalc "$fioResDirPfx" "$strHostNames " "$pressHostNames " $objSize
+    doSysCalc "$fioResCalcPfx" "$strHostNames " "$pressHostNames " $objSize
 }
 
 function dofiosubmit() {
