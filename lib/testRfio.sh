@@ -307,7 +307,7 @@ function dorfioCalcRes() {
     stdValSum=0
     i=0
     for f in $files;do
-	hName=${f##*.}
+	hidt=${f#*.}
 	iopsline=`grep -m 1 ' IOPS' $f`
 	pr_devErr "$iopsline"
 
@@ -330,7 +330,7 @@ function dorfioCalcRes() {
 	    stdValSum=`echo "scale=2; $stdValSum+$stdVal" | bc `
 	fi
 
-	rfiocsvAppendPer "$idt-$hName,$opsVal,$bwVal,$avgVal,$stdVal"
+	rfiocsvAppendPer "$idt.$hidt,$opsVal,$bwVal,$avgVal,$stdVal"
     done
 
     avgVal=`echo "scale=2;$avgValSum/$i" | bc`
