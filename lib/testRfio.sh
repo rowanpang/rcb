@@ -24,24 +24,24 @@ rfiocsvHeader="stage-iops-bw-latAvg-latStd"
 
 function rfiocsvInit() {
     #function_body
-    rfioResCSV="${topdir:-.}/rcbResult.csv"
+    rfioResCSV="${topdir:-.}/rfioResult.csv"
     if ! [ -s $rfioResCSV ];then
 	pr_hint "rfio result csv [init] : $rfioResCSV"
-	echo "${rcbcsvHeader//-/,}" > $rfioResCSV
+	echo "${rfiocsvHeader//-/,}" > $rfioResCSV
     else
 	pr_hint "rfio result csv [appent] : $rfioResCSV"
-	echo "${rcbcsvHeader//-/,}" >> $rfioResCSV
-	echo "${rcbcsvHeader//-/,}" >> $rfioResCSV
+	echo "${rfiocsvHeader//-/,}" >> $rfioResCSV
+	echo "${rfiocsvHeader//-/,}" >> $rfioResCSV
     fi
 
-    rfioResCSVPer="${topdir:-.}/rcbResult.per.csv"
+    rfioResCSVPer="${topdir:-.}/rfioResult.per.csv"
     if ! [ -s $rfioResCSVPer ];then
 	pr_hint "rfio result csv [init] : $rfioResCSVPer"
-	echo "${rcbcsvHeader//-/,}" > $rfioResCSV
+	echo "${rfiocsvHeader//-/,}" > $rfioResCSV
     else
 	pr_hint "rfio result csv [appent] : $rfioResCSVPer"
-	echo "${rcbcsvHeader//-/,}" >> $rfioResCSVPer
-	echo "${rcbcsvHeader//-/,}" >> $rfioResCSVPer
+	echo "${rfiocsvHeader//-/,}" >> $rfioResCSVPer
+	echo "${rfiocsvHeader//-/,}" >> $rfioResCSVPer
     fi
 }
 
