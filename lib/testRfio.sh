@@ -185,7 +185,7 @@ function fServerWkChk() {
 	toChk=""
 
 	for cli in $fioClients;do
-	    ps $cli
+	    ps $cli >/dev/null 2>&1
 	    [ $? -eq 0 ] && toChk="$toChk $cli"
 	done
 
