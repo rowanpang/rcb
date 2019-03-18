@@ -282,7 +282,7 @@ function latAvgStdParserLine() {
     #for case of 'lat (msec): min=2, max=100, avg=23.93, stdev= 9.71'
     avg=`echo $line | awk -F ',' '{print $3}'`
     avgVal=${avg%,};avgVal=${avgVal#*=}
-    avgVal=`echo $stdVal | sed 's/ //g'`
+    avgVal=`echo $avgVal | sed 's/ //g'`
 
     std=`echo $line | awk -F ',' '{print $4}'`
     stdVal=${std%,};stdVal=${stdVal#*=};
