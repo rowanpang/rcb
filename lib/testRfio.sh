@@ -238,8 +238,11 @@ function dorfio(){
 
 function iopsbwParserLine() {
     line="$1"
-    ops=`echo $line | awk '{print $3}'`
+
+    ops=`echo $line | awk -F ',' '{print $1}'`
+    ops=`echo $ops | awk -F ':' '{print $2}'`
     ops=${ops%,};ops=${ops#*=}
+    ops=`echo $ops | sed 's/ //g'`
 
     opsVal=`echo $ops | tr -d '[:alpha:]' `
     opsUnit=`echo $ops | tr -d '[:digit:]'.`
@@ -251,8 +254,10 @@ function iopsbwParserLine() {
 	   ;;
     esac
 
-    bw=`echo $line | awk '{print $4}'`
+    bw=`echo $line | awk -F ',' '{print $2}'`
+    bw=`echo $bw | awk -F '(' '{print $1}'`
     bw=${bw#*=}
+    bw=`echo $bw | sed 's/ //g'`
 
     bwVal=`echo $bw | tr -d '[:alpha:]/'`
     bwUnit=`echo $bw | tr -d '[:digit:]'.`
@@ -273,11 +278,15 @@ function latAvgStdParserLine() {
     unit=`echo $line | awk '{print $3}'`
     unit=`echo $unit | tr -d '():'`
 
-    avg=`echo $line | awk '{print $6}' `
-    avgVal=${avg%,};avgVal=${avgVal#*=}
 
-    std=`echo $line | awk '{print $7}' `
-    stdVal=${std%,};stdVal=${stdVal#*=}
+    #for case of 'lat (msec): min=2, max=100, avg=23.93, stdev= 9.71'
+    avg=`echo $line | awk -F ',' '{print $3}'`
+    avgVal=${avg%,};avgVal=${avgVal#*=}
+    avgVal=`echo $stdVal | sed 's/ //g'`
+
+    std=`echo $line | awk -F ',' '{print $4}'`
+    stdVal=${std%,};stdVal=${stdVal#*=};
+    stdVal=`echo $stdVal | sed 's/ //g'`
 
     pr_devErr "unit-avgVal-stdVal: $unit-$avgVal-$stdval"
 
