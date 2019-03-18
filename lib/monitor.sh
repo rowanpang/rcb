@@ -186,6 +186,8 @@ function gatherInfo(){
 
     lshw > $dirName/${pfx}lshw.log
 
+    lscpu > $dirName/${pfx}lscpu.log
+
     ip a > $dirName/${pfx}ipA.log
 }
 
