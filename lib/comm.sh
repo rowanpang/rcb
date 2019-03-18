@@ -203,9 +203,12 @@ function mkIssuesList() {
 	finIssues=$issuesNew
     fi
     nums=`echo $finIssues | wc -w`
-    echo "time stamp: `date +%Y%m%d-%H%M%S`,finally issues($nums):
+    timeStamp=`date +%Y%m%d-%H%M%S`
+    echo "time stamp: $timeStamp,finally issues($nums):
 	$finIssues
     "
+
+    echo "$timeStamp--> $finIssues" >> ${topdir:-.}/issuelist.log
 }
 
 function cmdChkInstall(){

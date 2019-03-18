@@ -74,6 +74,7 @@ function docbOnCtrlC(){
 
 function docbInit() {
     trap 'docbOnCtrlC' INT
+    topdirInit "rcbTest"
 
     mkIssuesList $objSize $testOps $tCfgDir
     docbMkIssueXml $finIssues
@@ -88,7 +89,6 @@ function docbInit() {
 	exit 1
     fi
 
-    topdirInit "rcbTest"
     commInit
     rcbcsvInit
 }
