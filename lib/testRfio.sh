@@ -236,36 +236,6 @@ function dorfio(){
     doSysCalc "$fioResCalcPfx" "$strHostNames " "$pressHostNames " $objSize
 }
 
-function getResDetails() {
-    pr_debug "in func getResDetails"
-
-    idt=$1
-    pfx=$2
-
-    files=`ls $pfx* 2>/dev/null`
-    [ X"$files" == X ] && pr_err "res file not exist for fpx $pfx"
-
-    for f in $files;do
-	iopsline=`grep -m 1 ' IOPS' $f`
-
-	opbw=`iopsbwParserLine "ALIGN $iopsline"`	    #add ALIGN word to align with grep multi files
-	opsVal=${opbw%,*}
-	bwVal=${opbw#*,}
-
-	latline=`grep -m 1 ' lat ' $f`
-	avgstd=`latAvgStdParserLine "ALIGN $latline"`
-	avgVal=${avgstd%,*}
-	stdVal=${avgstd#*,}
-
-	pr_debug "res for $f: $opsVal,$bwVal , $avgVal,$stdVal"
-
-	rfiocsvAppendPer "$idt,$opsVal,$bwVal,$avgVal,$stdVal"
-
-    done
-
-    pr_debug "out func getResDetails"
-}
-
 function iopsbwParserLine() {
     line="$1"
     ops=`echo $line | awk '{print $3}'`
@@ -297,29 +267,6 @@ function iopsbwParserLine() {
     echo "$opsVal,$bwVal"
 }
 
-function getIOPSBW() {
-    pfx=$1
-
-    iopslines=`grep -m 1 ' IOPS' $pfx*`
-    pr_devErr "$iopslines"
-
-    opsValSum=0
-    bwValSum=0
-
-    OIFS=$IFS
-    IFS=$'\n'
-    for line in $iopslines;do
-	opbw=`iopsbwParserLine "$line"`
-	opsVal=${opbw%,*}
-	bwVal=${opbw#*,}
-
-	opsValSum=`echo "scale=2; $opsValSum+$opsVal" | bc `
-	bwValSum=`echo "scale=2; $bwValSum+$bwVal" | bc `
-    done
-    IFS="$OIFS"
-    echo "$opsValSum,$bwValSum"
-}
-
 function latAvgStdParserLine() {
     line="$1"
 
@@ -345,29 +292,53 @@ function latAvgStdParserLine() {
     echo "$avgVal,$stdVal"
 }
 
-function getlatAvgStd() {
-    pfx=$1
-    latlines=`grep -m 1 ' lat ' $pfx*`
+function dorfioCalcRes() {
+    idt=$1
+    pfx=$2
+
+    pr_debug "in func dorfioCalcRes"
+
+    files=`ls $pfx* 2>/dev/null`
+    [ X"$files" == X ] && pr_err "dorfioCalcRes res file not exist,fpx $pfx"
+
+    opsValSum=0
+    bwValSum=0
     avgValSum=0
     stdValSum=0
     i=0
+    for f in $files;do
+	hName=${f##*.}
+	iopsline=`grep -m 1 ' IOPS' $f`
+	pr_devErr "$iopsline"
 
-    OIFS=$IFS
-    IFS=$'\n'
-    for line in $latlines;do
-	((i++))
-	avgstd=`latAvgStdParserLine $line`
-	avgVal=${avgstd%,*}
-	stdVal=${avgstd#*,}
+	opbw=`iopsbwParserLine "ALIGN $iopsline"`	    #add ALIGN word to align with grep multi files
+	opsVal=${opbw%,*}
+	bwVal=${opbw#*,}
 
-	avgValSum=`echo "scale=2; $avgValSum+$avgVal" | bc `
-	stdValSum=`echo "scale=2; $stdValSum+$stdVal" | bc `
+	opsValSum=`echo "scale=2; $opsValSum+$opsVal" | bc `
+	bwValSum=`echo "scale=2; $bwValSum+$bwVal" | bc `
+
+	latline=`grep -m 1 ' lat ' $f`
+
+	if [ X"$latline" != X ];then
+	    ((i++))
+	    avgstd=`latAvgStdParserLine "ALIGN $latline"`
+	    avgVal=${avgstd%,*}
+	    stdVal=${avgstd#*,}
+
+	    avgValSum=`echo "scale=2; $avgValSum+$avgVal" | bc `
+	    stdValSum=`echo "scale=2; $stdValSum+$stdVal" | bc `
+	fi
+
+	rfiocsvAppendPer "$idt-$hName,$opsVal,$bwVal,$avgVal,$stdVal"
     done
 
     avgVal=`echo "scale=2;$avgValSum/$i" | bc`
     stdVal=`echo "scale=2;$stdValSum/$i" | bc`
 
-    echo "$avgVal,$stdVal"
+    rfiocsvAppend "$idt,$opsValSum,$bwValSum,$avgVal,$stdVal"
+
+    pr_debug "out func dorfioCalcRes"
 }
 
 function dofiosubmit() {
@@ -399,18 +370,7 @@ function dofiosubmit() {
 
     echo
 
-    getResDetails $idtSuffix $resLog
-
-    iopsBW=`getIOPSBW $resLog`
-    avgStd=`getlatAvgStd $resLog`
-
-    iops=${iopsBW%,*}
-    bw=${iopsBW#*,}
-
-    latAvg=${avgStd%,*}
-    stdAvg=${avgStd#*,}
-
-    rfiocsvAppend "$idtSuffix,$iops,$bw,$latAvg,$stdAvg"
+    dorfioCalcRes $idtSuffix $resLog
 }
 
 function dofioIssues() {
