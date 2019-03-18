@@ -203,7 +203,7 @@ function mkIssuesList() {
 	finIssues=$issuesNew
     fi
     nums=`echo $finIssues | wc -w`
-    echo "finally issues($nums):
+    echo "time stamp: `date +%Y%m%d-%H%M%S`,finally issues($nums):
 	$finIssues
     "
 }

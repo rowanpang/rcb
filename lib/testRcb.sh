@@ -21,12 +21,22 @@ function rcbcsvInit(){
 	echo "${rcbcsvHeader//-/,}" >> $rcbResCSV
 	echo "${rcbcsvHeader//-/,}" >> $rcbResCSV
     fi
+
+    rcbResCSVPer="${topdir:-.}/rcbResult.per.csv"
+    if ! [ -s $rcbResCSVPer ];then
+	pr_hint "cb result csv [init] : $rcbResCSVPer"
+	echo "${rcbcsvHeader//-/,}" > $rcbResCSVPer
+    else
+	pr_hint "cb result csv [appent] : $rcbResCSVPer"
+	echo "${rcbcsvHeader//-/,}" >> $rcbResCSVPer
+	echo "${rcbcsvHeader//-/,}" >> $rcbResCSVPer
+    fi
 }
 
 function rcbcsvAppend(){
     line=$@
 
-    echo -en "\t$rcbcsvHeader: "
+    echo -en "\tfinal $rcbcsvHeader: "
     for res in $line;do
 	echo -en "$res\t"
     done
@@ -35,6 +45,17 @@ function rcbcsvAppend(){
     echo ${line// /,} >> $rcbResCSV
 }
 
+function rcbcsvAppendPer(){
+    line=$@
+
+    echo -en "\tper $rcbcsvHeader: "
+    for res in $line;do
+	echo -en "$res\t"
+    done
+    echo
+
+    echo ${line// /,} >> $rcbResCSVPer
+}
 function docbOnCtrlC(){
     verbose=1
     [ $verbose -ge 1 ] && echo "Ctrl+c captured"
@@ -137,8 +158,8 @@ function docbcsvParser(){
 		continue
 	    fi
 	    postCont="True"
-	    # i!=0, int calc stage,need do lat resAvg
-	    [ $verbose -ge 3 ] && echo 'no,need do resAvg .eg'
+	    # i!=0, int calc stage,need do lat latAvg
+	    [ $verbose -ge 3 ] && echo 'no,need do latAvg .eg'
 	fi
 
 	if [ X$stage == X$lstage ];then
@@ -148,10 +169,10 @@ function docbcsvParser(){
 	    resSum=`echo "scale=2;$resSum+$res" | bc`
 	else
 	    #$lstage != NULL, and $statge != $lstage indicate
-	    #lstage finished, do final calc,exp resAvg
+	    #lstage finished, do final calc,exp latAvg
 	    if [ X$lstage != X ];then
-		resAvg=`echo "scale=2;$resSum/$i"| bc`
-		rcbcsvAppend $lstage $iopsSum $bwSum $resAvg
+		latAvg=`echo "scale=2;$resSum/$i"| bc`
+		rcbcsvAppend $lstage $iopsSum $bwSum $latAvg
 		[ $verbose -ge 1 ] && echo "  new Stage: $stage "
 
 		#if in postCont,indicate not read/write stage, just next line continue
@@ -172,12 +193,14 @@ function docbcsvParser(){
 	    lstage=$stage
 	fi
 	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum bwSum:$bwSum resSum:$resSum"
+
+	rcbcsvAppendPer "$stage.$i" $iops $bw $latAvg
     done < $csvFile
 
     #file finished by read/write type stage. need do calc
     if [ $i -ge 1 ];then
-	resAvg=`echo "scale=2;$resSum/$i"| bc`
-	rcbcsvAppend $lstage $iopsSum $bwSum $resAvg
+	latAvg=`echo "scale=2;$resSum/$i"| bc`
+	rcbcsvAppend $lstage $iopsSum $bwSum $latAvg
     fi
 }
 
