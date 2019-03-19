@@ -57,7 +57,7 @@ function diskCalc(){
 
     [ X"$lsscsi" == X ] && pr_err "pdir:$pdir,lsscsi not exist"
 
-    ssds=`grep 'INTEL SSD\|Micron_' $lsscsi | awk -F '/' '{printf $3}'`
+    ssds=`grep 'INTEL SSD\|Micron_\|SAMSUNG' $lsscsi | awk -F '/' '{printf $3}'`
     ssdsReg=${ssds// /|}
     ssdsReg=${ssdsReg%|}
 
