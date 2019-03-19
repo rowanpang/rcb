@@ -208,7 +208,9 @@ function mkIssuesList() {
 	$finIssues
     "
 
-    echo "$timeStamp--> $finIssues" >> ${topdir:-.}/issuelist.log
+    issuefile="${topdir:-.}/issuelist.log"
+    echo >> $issuefile
+    echo "$timeStamp--> $finIssues" >> ${issuefile}
 }
 
 function cmdChkInstall(){
