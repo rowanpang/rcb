@@ -142,13 +142,13 @@ function docbcsvParser(){
 	stage=`echo $line | awk 'BEGIN {FS=","} { print $1}'`
 	opName=`echo $line | awk 'BEGIN {FS=","} { print $2}'`
 	opType=`echo $line | awk 'BEGIN {FS=","} { print $3}'`
-	res=`echo $line | awk 'BEGIN {FS=","} { print $6}'`
+	lat=`echo $line | awk 'BEGIN {FS=","} { print $6}'`
 	iops=`echo $line | awk 'BEGIN {FS=","} { print $14}'`
 	bw=`echo $line | awk 'BEGIN {FS=","} { print $15/1024/1024}'`
 	stage="$stage($opName)"
 
 
-	[ $verbose -ge 1 ] && echo "$stage $res $iops $opType --"
+	[ $verbose -ge 1 ] && echo "$stage $lat $iops $opType --"
 
 	if ! [ X$opType == Xread -o X$opType == Xwrite ] ;then
 	    [ $verbose -ge 3 ] && echo -n "not read/write, skip? "
@@ -166,12 +166,12 @@ function docbcsvParser(){
 	    ((i++));
 	    iopsSum=`echo "scale=2;$iopsSum+$iops" | bc`
 	    bwSum=`echo "scale=2;$bwSum+$bw" | bc`
-	    resSum=`echo "scale=2;$resSum+$res" | bc`
+	    latSum=`echo "scale=2;$latSum+$lat" | bc`
 	else
 	    #$lstage != NULL, and $statge != $lstage indicate
 	    #lstage finished, do final calc,exp latAvg
 	    if [ X$lstage != X ];then
-		latAvg=`echo "scale=2;$resSum/$i"| bc`
+		latAvg=`echo "scale=2;$latSum/$i"| bc`
 		rcbcsvAppend $lstage $iopsSum $bwSum $latAvg
 		[ $verbose -ge 1 ] && echo "  new Stage: $stage "
 
@@ -189,17 +189,17 @@ function docbcsvParser(){
 	    i=1
 	    iopsSum=$iops
 	    bwSum=$bw
-	    resSum=$res
+	    latSum=$lat
 	    lstage=$stage
 	fi
-	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum bwSum:$bwSum resSum:$resSum"
+	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum bwSum:$bwSum latSum:$latSum"
 
-	rcbcsvAppendPer "$stage.$i" $iops $bw $latAvg
+	rcbcsvAppendPer "$stage.driver$i" $iops $bw $lat
     done < $csvFile
 
     #file finished by read/write type stage. need do calc
     if [ $i -ge 1 ];then
-	latAvg=`echo "scale=2;$resSum/$i"| bc`
+	latAvg=`echo "scale=2;$latSum/$i"| bc`
 	rcbcsvAppend $lstage $iopsSum $bwSum $latAvg
     fi
 }
