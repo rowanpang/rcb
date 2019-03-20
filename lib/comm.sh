@@ -210,7 +210,7 @@ function mkIssuesList() {
 
     issuefile="${topdir:-.}/issuelist.log"
     echo >> $issuefile
-    echo "$timeStamp--> $finIssues" >> ${issuefile}
+    echo "$timeStamp--> Total $nums: $finIssues" >> ${issuefile}
 }
 
 function cmdChkInstall(){
