@@ -11,6 +11,8 @@ rcbcsvHeader="stage-iops-bw-lat"
 cbResDirPfx="cbRes-"
 cbResCalcPfx='cbRes-w*-'
 
+cbIssueMaxRunSecs="1200"
+
 function rcbcsvInit(){
     rcbResCSV="${topdir:-.}/rcbResult.csv"
     if ! [ -s $rcbResCSV ];then
@@ -288,6 +290,11 @@ function docbsubmit(){
 	echo -n "$tDur s"
 	lineadj $tdln $tdlo
 	tdlo=$tdln
+
+	if [ $tDur -ge $cbIssueMaxRunSecs ];then
+	    pr_warn "$wkid runtime great than $cbIssueMaxRunSecs,cancel it"
+	    docbCancel
+	fi
 	sleep 1
     done
     echo -ne "\e[0m"
