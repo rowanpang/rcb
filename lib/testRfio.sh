@@ -214,7 +214,7 @@ function dofioInit(){
     commInit
     rfioDepChk
 
-    topdirInit "rfioTest"
+    topdirInit "logRfio"
     rfiocsvInit
 
     fServerStart

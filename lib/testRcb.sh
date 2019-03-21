@@ -76,7 +76,7 @@ function docbOnCtrlC(){
 
 function docbInit() {
     trap 'docbOnCtrlC' INT
-    topdirInit "rcbTest"
+    topdirInit "logRCB"
 
     mkIssuesList $objSize $testOps $tCfgDir
     docbMkIssueXml $finIssues
