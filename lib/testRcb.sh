@@ -125,6 +125,9 @@ function docbcsvParser(){
     csvFile="$HOME/w171-4m-read/w171-4m-read.csv"
     csvFile=$1
 
+    wid=`basename $csvFile`
+    wid=${wid%%-*}
+
     hitHeader=""
     lstage=""
     i="0"
@@ -196,13 +199,13 @@ function docbcsvParser(){
 	fi
 	[ $verbose -ge 2 ] && echo "cur iopsSum:$iopsSum bwSum:$bwSum latSum:$latSum"
 
-	rcbcsvAppendPer "$stage.driver$i" $iops $bw $lat
+	rcbcsvAppendPer "$wid.$stage.driver$i" $iops $bw $lat
     done < $csvFile
 
     #file finished by read/write type stage. need do calc
     if [ $i -ge 1 ];then
 	latAvg=`echo "scale=2;$latSum/$i"| bc`
-	rcbcsvAppend $lstage $iopsSum $bwSum $latAvg
+	rcbcsvAppend "$wid.$lstage" $iopsSum $bwSum $latAvg
     fi
 }
 
