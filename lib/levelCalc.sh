@@ -195,7 +195,8 @@ function resDirslevel(){
     #tmp/lun1/fioR-rbd-16k-rand-read/
     for dir in $folds;do
 	pr_debug "---calc for $dir----"
-	eidt=${dir#*-}
+	eidt=`basename $dir`
+	eidt=${eidt#*-}
 	eidt=${eidt%%-*}    #w180 or rbd
 	hostlevel $dir $eidt
     done
