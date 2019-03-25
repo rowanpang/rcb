@@ -34,13 +34,13 @@ function csvAppend(){
     echo ${line// /,} >> $syslevelcsv
 }
 
-function hostIdentify(){
+function sizeOpIdt(){
     parentDir=$1
     hosts=$2
     h=${hosts%%,*}  #use the first host to get the $size-$op as idt
 
     hdir=`ls -d $parentDir/$h-* 2>/dev/null`
-    [ X"$hdir" == X ] && pr_err  "hostIdentify,hdir under $parentDir not exist"
+    [ X"$hdir" == X ] && pr_err  "sizeOpIdt,hdir under $parentDir not exist"
     pr_devErr "idt Host dir:$hdir"
 
     bName=`basename $hdir`
@@ -150,18 +150,20 @@ function hostsAvg(){
 
 function hostlevel(){
     pdir=$1	#parent dir
+    eidt=$2
 
-    idt=`hostIdentify $pdir $strHosts`
-    [ $? -ne 0 ] && pr_err "hostIdentify exec error"
+    idt=`sizeOpIdt $pdir $strHosts`
+    [ $? -ne 0 ] && pr_err "sizeOpIdt exec error"
     strAvg=`hostsAvg $pdir $strHosts`
     [ $? -ne 0 ] && pr_err "hostavg exec error"
     cliAvg=`hostsAvg $pdir $cliHosts`
 
-    csvAppend $idt,$strAvg,$cliAvg
+    csvAppend "$eidt.$idt,$strAvg,$cliAvg"
 }
 
 function resDirslevel(){
     folds=""
+    eidt=""
     for s in ${objSizes//,/ };do
 	dir=`ls -d $calcTgtDir/$resDirPfx$s-* 2>/dev/null`
 	[ X"$dir" == X ] && pr_debug "cacl host dir: '$calcTgtDir/$resDirPfx$s-*' not exist,skip"
@@ -170,9 +172,13 @@ function resDirslevel(){
 
     [ X"$folds" == X ] && pr_err "calc host dirs Empty"
 
+    #rcbTest-1552954661/cbRes-w180-4k-w50write/		OR
+    #tmp/lun1/fioR-rbd-16k-rand-read/
     for dir in $folds;do
 	pr_debug "---calc for $dir----"
-	hostlevel $dir
+	eidt=${dir#*-}
+	eidt=${eidt%%-*}    #w180 or rbd
+	hostlevel $dir $eidt
     done
 }
 
