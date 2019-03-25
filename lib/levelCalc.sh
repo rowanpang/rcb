@@ -49,7 +49,7 @@ function sizeOpIdt(){
 }
 
 function diskCalc(){
-    #out put ssdAvg,hddAvg
+    #output ssdAvg,hddAvg
     pdir=$1
 
     file="$pdir/disk.log.extra"
@@ -99,6 +99,22 @@ function diskCalc(){
 	}'
 }
 
+function netCalc() {
+    #output netRx,netTx
+    pdir=$1
+    file="$pdir/dstat.log"
+
+    total=`wc -l $file | cut -d ' ' -f 1`
+    begin=`echo "$total*5/100" | bc`
+    end=`echo "$total*95/100" | bc`
+    net=`sed --silent "$begin,${end}p" $file | awk 'BEGIN{FS="|"} {print $3}'`
+
+    netRx=`echo "$net" | awk '{print $1}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
+    netTx=`echo "$net" | awk '{print $2}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
+
+    echo "$netRx,$netTx"
+}
+
 function hostsAvg(){
     parentDir=$1
     hosts=$2
@@ -122,9 +138,12 @@ function hostsAvg(){
 	diskSSD=${disk%,*}
 	diskHDD=${disk#*,}
 
+	net=`netCalc $hdir`
+	[ $? -ne 0 ] && pr_err "netCalc error for $parentDir"
+	netRx=${net%,*}
+	netTx=${net#*,}
+
 	cpu=`cat $hdir/cpu.log | awk 'BEGIN{ i=1 } {sum+=$9;i++} END {print 100-sum/i}'`
-	netRx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $1}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
-	netTx=`cat $hdir/dstat.log | awk 'BEGIN{FS="|"} {print $3}' | awk '{print $2}' |grep M | awk '{sum+=$1} END{NR+=1;print sum*8/NR/100;}'`
 
 	pr_devErr "--hostVal: $cpu,$diskSSD,$diskHDD,$netRx,$netTx"
 
@@ -206,4 +225,4 @@ function testMain(){
     resDirslevel
 }
 
-[ X`basename $0` == XresCalc.sh ] && testMain
+[ X`basename $0` == XlevelCalc.sh ] && testMain
