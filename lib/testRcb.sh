@@ -151,7 +151,7 @@ function docbcsvParser(){
 	iops=`echo $line | awk 'BEGIN {FS=","} { print $14}'`
 
 	#cosbench web view based on 1000,
-	bw=`echo $line | awk 'BEGIN {FS=","} { print $15/1024/1024}'`
+	bw=`echo $line | awk 'BEGIN {FS=","} { print $15/1000/1000}'`
 	stage="$stage($opName)"
 
 
