@@ -149,6 +149,8 @@ function docbcsvParser(){
 	opType=`echo $line | awk 'BEGIN {FS=","} { print $3}'`
 	lat=`echo $line | awk 'BEGIN {FS=","} { print $6}'`
 	iops=`echo $line | awk 'BEGIN {FS=","} { print $14}'`
+
+	#cosbench web view based on 1000,
 	bw=`echo $line | awk 'BEGIN {FS=","} { print $15/1024/1024}'`
 	stage="$stage($opName)"
 
