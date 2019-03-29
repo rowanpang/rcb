@@ -107,6 +107,8 @@ function main(){
     cfgFile="./conf.cfg"
     [ -s $cfgFile ] && source $cfgFile
     cmdChose $@
+
+    echo "topdir:-----$topdir-----"
 }
 
 :<<EOF

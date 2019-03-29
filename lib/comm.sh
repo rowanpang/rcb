@@ -268,9 +268,9 @@ function commInit() {
 
 function topdirInit() {
     pfx=$1
-    topdir="$pfx-`date +%s`"
+    topdir="$pfx-`date +%Y%m%d-%H%M%S`"
     if [ -d $topdir ];then
-	topdirbk=$topdir-`date+%s`
+	topdirbk="$topdir.bak"
 	echo "$topdir duplicate, mv to $topdirbk"
 	mv $topdir $topdirbk
     fi
