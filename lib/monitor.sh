@@ -174,7 +174,7 @@ function checkKill() {
 		fi
 	    fi
 
-	    [ $verbose -ge 1 ] && printf "\tkill pid-oCmd: %20s---%s\n" "$pid-$oCmd" "$killStat"
+	    [ $verbose -ge 1 ] && printf "\tkill pid-oCmd: %-20s---%s\n" "$pid-$oCmd" "$killStat"
 	done
 
 	rm -rf $pidfile
