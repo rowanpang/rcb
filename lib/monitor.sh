@@ -28,6 +28,8 @@ function cmdChkInstall(){
 }
 
 function optParser(){
+    #init val is based on max run time  half an hour
+    ((count=1800/$interval))
     while getopts ":hd:v:i:c:" opt;do
         case $opt in
             h)
@@ -144,8 +146,6 @@ function doInit() {
 
     [ -d $dirName ] && rm -rf $dirName
     mkdir $dirName
-    #init val is based on max run time  half an hour
-    ((count=1800/$interval))
 }
 
 function checkKill() {
