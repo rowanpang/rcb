@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function usage () {
-    echo "Usage :  $0 [options] [optIssues]
+    echo "Usage :  $0 [options] [identify]
         Options:
         -h		    Display this message
         -d  dirname	    log dirName
@@ -74,34 +74,39 @@ function depCheck(){
 }
 
 function doMon(){
-    recCmd="iostat"
+    pids=""
+
     #disk
+    recCmd="iostat"
     iostat -m sd{a..z} sda{a..z} $interval $count > $dirName/disk.log &
-    pids="$recCmd,$!"
+    pids="$pids $recCmd,$!"
 
     #disk-extra
+    recCmd="iostat"
     iostat -m -x  sd{a..z} sda{a..z} $interval $count > $dirName/disk.log.extra &
     pids="$pids $recCmd,$!"
 
-    recCmd="sar"
     #net
+    recCmd="sar"
     sar -n DEV $interval $count > $dirName/net.log 	&
     pids="$pids $recCmd,$!"
 
     #cpu
+    recCmd="sar"
     sar -u $interval $count > $dirName/cpu.log	&
     pids="$pids $recCmd,$!"
 
+    recCmd="sar"
     sar -P ALL $interval $count > $dirName/cpu.log.per 	&
     pids="$pids $recCmd,$!"
 
-    recCmd="free"
     #mem
+    recCmd="free"
     free -c $count -s $interval -h > $dirName/mem.log &
     pids="$pids $recCmd,$!"
 
-    recCmd="pidstat"
     #pidstat
+    recCmd="pidstat"
     pidstat -l -t -d -u -C "fio|tgtd|icfs|ceph-osd|radosgw" $interval $count > $dirName/pidstat.log &
     pids="$pids $recCmd,$!"
 
@@ -201,7 +206,6 @@ function main(){
 }
 
 verbose="1"
-pids=""
 pidfile="pid-bg.log"
 interval=1
 count=""
