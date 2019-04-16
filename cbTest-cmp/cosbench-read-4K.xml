@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<workload name="read-4K" description="sample benchmark for s3">
+  
+  <workflow>
+
+<workstage name="read">
+  <work name="w1" workers="40" totalOps="51200" driver="driver1">
+    <operation type="read" ratio="100" config="cprefix=bucket-;oprefix=w1-04-;containers=c(8);objects=s(1,51200);sizes=c(4)KB;" />
+    <storage type="s3" config="path_style_access=true;accesskey=8V7BMTUELLUAIKA3OIJ1;secretkey=FvaASmjP7wyYbO7LKoluiAe1oXe5wzX7S6bmrmON;endpoint=http://10.146.33.152:7480;server_side_encryption=false; "/>
+  </work>
+  <work name="w2" workers="40" totalOps="51200" driver="driver1">
+    <operation type="read" ratio="100" config="cprefix=bucket-;oprefix=w2-04-;containers=c(8);objects=s(1,51200);sizes=c(4)KB;" />
+    <storage type="s3" config="path_style_access=true;accesskey=8V7BMTUELLUAIKA3OIJ1;secretkey=FvaASmjP7wyYbO7LKoluiAe1oXe5wzX7S6bmrmON;endpoint=http://10.146.33.152:7481;server_side_encryption=false; "/>
+  </work>
+  <work name="w3" workers="40" totalOps="51200" driver="driver2">
+    <operation type="read" ratio="100" config="cprefix=bucket-;oprefix=w3-04-;containers=c(8);objects=s(1,51200);sizes=c(4)KB;" />
+    <storage type="s3" config="path_style_access=true;accesskey=8V7BMTUELLUAIKA3OIJ1;secretkey=FvaASmjP7wyYbO7LKoluiAe1oXe5wzX7S6bmrmON;endpoint=http://10.146.33.153:7480;server_side_encryption=false; "/>
+  </work>
+  <work name="w4" workers="40" totalOps="51200" driver="driver2">
+    <operation type="read" ratio="100" config="cprefix=bucket-;oprefix=w4-04-;containers=c(8);objects=s(1,51200);sizes=c(4)KB;" />
+    <storage type="s3" config="path_style_access=true;accesskey=8V7BMTUELLUAIKA3OIJ1;secretkey=FvaASmjP7wyYbO7LKoluiAe1oXe5wzX7S6bmrmON;endpoint=http://10.146.33.153:7481;server_side_encryption=false; "/>
+  </work>
+  <work name="w5" workers="40" totalOps="51200" driver="driver3">
+    <operation type="read" ratio="100" config="cprefix=bucket-;oprefix=w5-04-;containers=c(8);objects=s(1,51200);sizes=c(4)KB;" />
+    <storage type="s3" config="path_style_access=true;accesskey=8V7BMTUELLUAIKA3OIJ1;secretkey=FvaASmjP7wyYbO7LKoluiAe1oXe5wzX7S6bmrmON;endpoint=http://10.146.33.151:7480;server_side_encryption=false; "/>
+  </work>
+  <work name="w6" workers="40" totalOps="51200" driver="driver3">
+    <operation type="read" ratio="100" config="cprefix=bucket-;oprefix=w6-04-;containers=c(8);objects=s(1,51200);sizes=c(4)KB;" />
+    <storage type="s3" config="path_style_access=true;accesskey=8V7BMTUELLUAIKA3OIJ1;secretkey=FvaASmjP7wyYbO7LKoluiAe1oXe5wzX7S6bmrmON;endpoint=http://10.146.33.151:7481;server_side_encryption=false; "/>
+  </work>
+  </workstage>
+
+  </workflow>
+  
+</workload>
+
