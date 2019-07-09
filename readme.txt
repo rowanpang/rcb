@@ -4,4 +4,5 @@
 
 1,usage
     a, ./rcb.sh -t 4k; ./rcb.sh -t 1m
+    b,cp conf.cfg.exp conf.cfg
 
