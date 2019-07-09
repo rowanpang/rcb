@@ -1,5 +1,5 @@
 :<<EOF
-    ================== node config ===============
+    <================= node config ===============
     node to monitor
     192.168.100.100,IPS@jjfab2018
     192.168.100.101,IPS@jjfab2018
@@ -12,11 +12,8 @@ pressNodesPwds="
     127.0.0.1,IPS@jjfab2018
 "
 
-
-
-
 :<<EOF
-    ================== rcb config ================
+    <================= rcb config ================
 EOF
 cbdir='/path/to/cosbench/dir'
 cbObjSize="rt4k,rt16k,rt256k,rt1m,rt4m,rt20m"
@@ -28,10 +25,8 @@ cbTestOps="w50write,w200write,w50read,w200read"
 cbObjSize="4k,64k,4m"
 cbTestOps="w50write,w200write,w50read,w200read"
 
-
-
 :<<EOF
-    ================ rfio config ================
+    <=============== rfio config ================
     nodes run with fio --server,plus localhost exec fio
     must contain in then nodesToMonPwds
     ref ./lib/testRfio.sh for usage

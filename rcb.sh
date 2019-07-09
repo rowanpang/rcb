@@ -5,8 +5,10 @@ source ./lib/mon.sh
 source ./lib/levelCalc.sh
 source ./lib/testRcb.sh
 source ./lib/testRfio.sh
-source ./lib/testClean.sh
 source ./lib/testCalc.sh
+source ./lib/testMon.sh
+
+#source ./lib/testClean.sh
 
 SSHPSCP="sshpass -p \$(gotNodePwd \$node) scp"
 SSHPSSH="sshpass -p \$(gotNodePwd \$node) ssh"
@@ -96,8 +98,12 @@ function cmdChose() {
 	calc)
 	    doCalcCmd $@
 	    ;;
+	monOps)
+	    doMonDirect $@
+	    ;;
+
 	*)
-	    echo "cmd error exit 1"
+	    echo "cmd error, none match exit 1"
 	    exit 1
 	    ;;
     esac
