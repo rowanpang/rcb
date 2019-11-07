@@ -79,7 +79,7 @@ function stopMonGetRet(){
 	#echo "idt:$identify"
 
 	if [ -z "$workDir" ];then
-	    echo 'monitor workDir not exist return'
+	    pr_warn "$node: stopMonGetRet workDir not exist return"
 	    return
 	fi
 
@@ -99,7 +99,7 @@ function postMon() {
 	#echo $workDir
 
 	if [ -z "$workDir" ];then
-	    echo 'monitor workDir not exist return'
+	    pr_warn "$node: postMon workDir not exist return"
 	    return
 	fi
 
