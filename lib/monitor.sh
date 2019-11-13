@@ -127,7 +127,7 @@ EOF
     #/usr/bin/python2 /usr/bin/dstat --nocolor
     recCmd="python"
     #dstat
-    dstat --nocolor > $dirName/dstat.log &
+    dstat --nocolor $interval $count > $dirName/dstat.log &
     pids="$pids $recCmd,$!"
 
     echo $pids > $pidfile
