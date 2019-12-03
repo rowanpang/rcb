@@ -17,12 +17,12 @@ function cmdChkInstall(){
     pkg=$cmd
     [ $# -ge 2 ] && pkg=$2
 
-    [ $verbose -ge 1 ] && echo "do cmdChkInstall for $cmd, pkg:$pkg"
+    [ $verbose -ge 2 ] && echo "do cmdChkInstall for $cmd, pkg:$pkg"
 
     command -v $cmd >/dev/null 2>&1
 
     if ! [ $? ];then
-	[ $verbose -ge 1 ] && echo "cmd $cmd not found,do yum install $pkg"
+	[ $verbose -ge 2 ] && echo "cmd $cmd not found,do yum install $pkg"
 	yum --assumeyes install  $pkg
     fi
 }
@@ -64,13 +64,13 @@ function optParser(){
 }
 
 function depCheck(){
-    [ $verbose -ge 1 ] && echo 'in func depCheck'
+    [ $verbose -ge 2 ] && echo 'in func depCheck'
     cmdChkInstall dstat
     cmdChkInstall pidstat sysstat
     cmdChkInstall lshw
     cmdChkInstall lsscsi
     cmdChkInstall ip iproute
-    [ $verbose -ge 1 ] && echo 'out func depCheck'
+    [ $verbose -ge 2 ] && echo 'out func depCheck'
 }
 
 function doMon(){
@@ -145,7 +145,7 @@ function doInit() {
     fi
 
     if [ $verbose -ge 1 ];then
-	echo "idt:$identify,dir:$dirName,verbose:$verbose"
+	echo "idt:$identify,dir:$dirName,verbose:$verbose, `date +%H:%M:%S`"
 	echo "-----log dir:$dirName------"
     fi
 
