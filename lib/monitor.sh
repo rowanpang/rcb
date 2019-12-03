@@ -149,7 +149,10 @@ function doInit() {
 	echo "-----log dir:$dirName------"
     fi
 
-    [ -d $dirName ] && rm -rf $dirName
+    if [ -d $dirName ] ;then
+	mv $dirName $dirName.bk.`date +%Y%m%d.%H%M%S`
+    fi
+
     mkdir $dirName
 }
 
@@ -190,18 +193,18 @@ function checkKill() {
 
 function gatherInfo(){
     pfx="info-"
-    lsscsi > $dirName/${pfx}lsscsi.log
-    df -h > $dirName/${pfx}df.log
-
     cat /etc/os-release > $dirName/${pfx}osInfo.log
     echo >> $dirName/${pfx}osInfo.log
     uname -a >> $dirName/${pfx}osInfo.log
 
+    lsscsi > $dirName/${pfx}lsscsi.log
+    lsblk > $dirName/${pfx}lsblk.log
+    df -h > $dirName/${pfx}df.log
+
     lshw > $dirName/${pfx}lshw.log
-
     lscpu > $dirName/${pfx}lscpu.log
-
     ip a > $dirName/${pfx}ipA.log
+    lspci -vvv > $dirName/${pfx}lspci.log
 }
 
 function main(){
