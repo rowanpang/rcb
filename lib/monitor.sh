@@ -42,9 +42,10 @@ function optParser(){
 		verbose="$OPTARG"
 		;;
 	    i)
+		intervalOrg="$interval"
 		interval="$OPTARG"
 		#update count
-		((count=(1800+$interval-1)/$interval))
+		((count=($count*$intervalOrg+$interval-1)/$interval))
 		;;
 	    c)
 		count="$OPTARG"
